@@ -15,7 +15,7 @@ def create_tables():
     Base.metadata.create_all(bind=engine)
 
 def get_db():
-    """Get database session"""
+    """Get database session for FastAPI"""
     db = SessionLocal()
     try:
         yield db
@@ -23,5 +23,5 @@ def get_db():
         db.close()
 
 def get_db_session():
-    """Get database session for direct use"""
+    """Get database session for bot"""
     return SessionLocal()

@@ -17,4 +17,3 @@ DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
 # App
 APP_NAME = os.getenv("APP_NAME", "Dunya Jewellery Bot")
-

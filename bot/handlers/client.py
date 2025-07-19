@@ -1,4 +1,4 @@
-"""Client-facing handlers for product viewing and orders"""
+"""Client handlers"""
 
 from telegram import Update, InputMediaPhoto
 from telegram.ext import ContextTypes
@@ -27,11 +27,10 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         return
 
-    # Send header with back button
+    # Send header
     reply_markup = get_client_back_keyboard()
     await query.edit_message_text(
         CLIENT_PRODUCTS_HEADER,
-        parse_mode='Markdown',
         reply_markup=reply_markup
     )
 
@@ -50,67 +49,47 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
                         chat_id=query.message.chat_id,
                         photo=file_ids[0],
                         caption=message,
-                        parse_mode='Markdown',
                         reply_markup=reply_markup
                     )
                 else:
-                    # Multiple images as media group
-                    # Filter out invalid file_ids
-                    valid_file_ids = []
-                    for file_id in file_ids:
-                        if file_id and len(file_id) > 10:  # Basic validation
-                            valid_file_ids.append(file_id)
+                    # Multiple images
+                    media = []
+                    for i, file_id in enumerate(file_ids):
+                        if i == 0:
+                            media.append(InputMediaPhoto(media=file_id, caption=message))
+                        else:
+                            media.append(InputMediaPhoto(media=file_id))
 
-                    if valid_file_ids:
-                        media = []
-                        for i, file_id in enumerate(valid_file_ids):
-                            if i == 0:
-                                media.append(InputMediaPhoto(media=file_id, caption=message, parse_mode='Markdown'))
-                            else:
-                                media.append(InputMediaPhoto(media=file_id))
+                    await context.bot.send_media_group(
+                        chat_id=query.message.chat_id,
+                        media=media
+                    )
 
-                        await context.bot.send_media_group(
-                            chat_id=query.message.chat_id,
-                            media=media
-                        )
-
-                        # Send order button separately
-                        await context.bot.send_message(
-                            chat_id=query.message.chat_id,
-                            text=f"📞 Mahsulot: *{product.title}*",
-                            parse_mode='Markdown',
-                            reply_markup=reply_markup
-                        )
-                    else:
-                        # No valid images - send text only
-                        await context.bot.send_message(
-                            chat_id=query.message.chat_id,
-                            text=message,
-                            parse_mode='Markdown',
-                            reply_markup=reply_markup
-                        )
-            except BadRequest as e:
-                # Handle invalid file_ids gracefully
+                    # Send order button separately
+                    await context.bot.send_message(
+                        chat_id=query.message.chat_id,
+                        text=f"📞 Mahsulot: {product.title}",
+                        reply_markup=reply_markup
+                    )
+            except BadRequest:
+                # Handle bad file IDs
                 reply_markup = get_product_order_keyboard(product.id)
                 await context.bot.send_message(
                     chat_id=query.message.chat_id,
                     text=message,
-                    parse_mode='Markdown',
                     reply_markup=reply_markup
                 )
-                print(f"Error sending media for product {product.id}: {e}")
         else:
-            # No images - send text with order button
+            # No images
             reply_markup = get_product_order_keyboard(product.id)
             await context.bot.send_message(
                 chat_id=query.message.chat_id,
                 text=message,
-                parse_mode='Markdown',
                 reply_markup=reply_markup
             )
 
 async def show_contact_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Show contact information from database"""
+    """Show contact information"""
     query = update.callback_query
     await query.answer()
 
@@ -119,15 +98,17 @@ async def show_contact_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     db.close()
 
     if not contacts:
-        # Fallback to default contact info if no contacts in database
-        await query.edit_message_text(CONTACT_INFO, parse_mode='Markdown')
+        # Fallback to default contact
+        await query.edit_message_text(
+            "📞 Bog'lanish\n\n📱 Telefon: +998 90 123 45 67\n💬 Telegram: @dunya_jewellery"
+        )
         return
 
-    # Build dynamic contact message
-    contact_message = "📞 *Bog'lanish ma'lumotlari*\n\n"
+    # Build contact message
+    contact_message = "📞 Bog'lanish ma'lumotlari\n\n"
 
     for contact in contacts:
-        contact_message += f"👤 *{contact.label}*\n"
+        contact_message += f"👤 {contact.label}\n"
 
         if contact.telegram_username:
             contact_message += f"💬 Telegram: @{contact.telegram_username}\n"
@@ -140,10 +121,10 @@ async def show_contact_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         contact_message += "\n"
 
-    await query.edit_message_text(contact_message, parse_mode='Markdown')
+    await query.edit_message_text(contact_message)
 
 async def handle_order_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle order requests from clients"""
+    """Handle order requests"""
     query = update.callback_query
     await query.answer()
 
@@ -154,13 +135,12 @@ async def handle_order_request(update: Update, context: ContextTypes.DEFAULT_TYP
     )
 
 async def back_to_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Go back to main menu for clients"""
+    """Back to main menu"""
     query = update.callback_query
     await query.answer()
 
     reply_markup = get_client_inline_keyboard()
     await query.edit_message_text(
         CLIENT_WELCOME,
-        parse_mode='Markdown',
         reply_markup=reply_markup
     )

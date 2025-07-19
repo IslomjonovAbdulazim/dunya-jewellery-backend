@@ -1,10 +1,8 @@
-# models.py
 from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 
 Base = declarative_base()
-
 
 class Product(Base):
     __tablename__ = "products"
@@ -12,8 +10,8 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(255), nullable=False)
     description = Column(Text)
-    sizes = Column(Text)  # "16.5,17,17.5,18,18.5,19"
-    telegram_file_ids = Column(Text)  # "file_id1,file_id2,file_id3"
+    sizes = Column(Text)  # "16.5,17,17.5,18"
+    telegram_file_ids = Column(Text)  # "file_id1,file_id2"
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
@@ -22,7 +20,10 @@ class Product(Base):
         """Return sizes as list of floats"""
         if not self.sizes:
             return []
-        return [float(s.strip()) for s in self.sizes.split(",") if s.strip()]
+        try:
+            return [float(s.strip()) for s in self.sizes.split(",") if s.strip()]
+        except:
+            return []
 
     def get_file_ids_list(self):
         """Return file IDs as list"""
@@ -44,18 +45,14 @@ class Product(Base):
         else:
             self.telegram_file_ids = ""
 
-
 class Contact(Base):
     __tablename__ = "contacts"
 
     id = Column(Integer, primary_key=True)
-    label = Column(String(100), nullable=False)  # "Asosiy", "Savdo", "Yordam"
+    label = Column(String(100), nullable=False)
     telegram_username = Column(String(100))
     phone_number = Column(String(20))
     instagram_username = Column(String(100))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-
-    def __repr__(self):
-        return f"<Contact(id={self.id}, label='{self.label}')>"

@@ -1,96 +1,97 @@
-# Text constants and messages for the bot
+# Pure Uzbek messages for users
 
 # Welcome messages
-ADMIN_WELCOME = "🔧 *Admin Panel - Dunya Jewellery*\n\nXush kelibsiz! Quyidagi tugmani bosing:"
-CLIENT_WELCOME = "🌟 *Dunya Jewellery*ga xush kelibsiz!\n\nBizning go'zal zargarlik buyumlarimiz bilan tanishib chiqing:"
+ADMIN_WELCOME = "🔧 Admin Panel - Dunya Jewellery\n\nXush kelibsiz! Quyidagi tugmalardan foydalaning:"
+CLIENT_WELCOME = "🌟 Dunya Jewellery ga xush kelibsiz!\n\nChiroyli zargarlik mahsulotlarimiz bilan tanishing:"
 
 # Help messages
 ADMIN_HELP = (
     "🔧 *Admin Buyruqlari*\n\n"
-    "• `/products` - Barcha mahsulotlar\n"
+    "• `/start` - Asosiy menyu\n"
     "• `/add` - Mahsulot qo'shish\n"
-    "• `/edit 1` - 1-ID mahsulotni tahrirlash\n"
-    "• `/delete 1` - 1-ID mahsulotni o'chirish"
+    "• `/add_contact` - Kontakt qo'shish"
 )
 
-CLIENT_HELP = (
-    "💍 *Dunya Jewellery*\n\n"
-    "• /start - Asosiy menyu\n"
-    "• Mahsulotlarni ko'rish uchun tugmalardan foydalaning"
-)
+CLIENT_HELP = "💍 *Dunya Jewellery*\n\n• `/start` - Asosiy menyu\n• Mahsulotlarni ko'rish uchun tugmalardan foydalaning"
 
-# Product management messages
-NO_PRODUCTS_ADMIN = "📦 Mahsulotlar yoq. /add buyrugi bilan qoshing."
+# Product messages
+NO_PRODUCTS_ADMIN = "📦 Mahsulotlar yo'q. Yangi qo'shing."
 NO_PRODUCTS_CLIENT = "🔍 Hozircha mahsulotlar mavjud emas."
-ALL_PRODUCTS_HEADER = "📦 *Barcha mahsulotlar:*"
-CLIENT_PRODUCTS_HEADER = "🛍️ *Bizning mahsulotlar:*"
-PRODUCTS_COUNT = "📋 Jami: {} ta mahsulot"
-SELECT_PRODUCT = "👆 Mahsulotni tanlang:"
+ALL_PRODUCTS_HEADER = "📦 *Barcha mahsulotlar*"
+CLIENT_PRODUCTS_HEADER = "🛍️ *Bizning mahsulotlar*"
 
-# Product creation workflow
-ADD_PRODUCT_START = "✏️ Yangi mahsulot qoshamiz!\n\nMahsulot *nomini* yuboring:"
-ENTER_DESCRIPTION = "*Tavsifni* yuboring:"
-ENTER_SIZES = "*Olchamlarni* yuboring (16.5, 17, 18):"
-ENTER_IMAGES = "Rasmlarni yuboring yoki 'tayyor' yozing:"
+# Product creation
+ADD_PRODUCT_START = "✏️ Yangi mahsulot qo'shamiz!\n\nMahsulot nomini yuboring:"
+ENTER_DESCRIPTION = "📄 Mahsulot tavsifini yuboring:"
+ENTER_SIZES = "📏 O'lchamlarni yuboring (16.5, 17, 18):"
+ENTER_IMAGES = "📸 Rasmlarni yuboring yoki 'tayyor' yozing:"
 
-# Product editing workflow
-EDIT_TITLE_PROMPT = "Yangi *nom* yuboring yoki /skip:"
-EDIT_DESCRIPTION_PROMPT = "Yangi *tavsif* yuboring yoki /skip\n\n📝 Hozirgi tavsif: _{}_"
-EDIT_SIZES_PROMPT = "*Olchamlar* (16.5, 17, 18) yoki /skip\n\n📏 Hozirgi olchamlar: _{}_"
-EDIT_IMAGES_PROMPT = "Yangi rasmlarni yuboring yoki 'tayyor' yozing\n\n🖼️ Hozirgi rasmlar: {} ta\n\n💡 Yangi rasm qoshsangiz, eskisi almashadi"
+# Product editing
+EDIT_TITLE_PROMPT = "📝 Yangi nom yuboring yoki /skip:"
+EDIT_DESCRIPTION_PROMPT = "📄 Yangi tavsif yuboring yoki /skip\n\n💡 Hozirgi: {}"
+EDIT_SIZES_PROMPT = "📏 Yangi o'lchamlar yuboring yoki /skip\n\n💡 Hozirgi: {}"
+EDIT_IMAGES_PROMPT = "📸 Yangi rasmlarni yuboring yoki 'tayyor' yozing\n\n💡 Hozirgi: {} ta"
 
 # Success messages
 PRODUCT_CREATED = "✅ '{}' yaratildi! ID: {}"
 PRODUCT_UPDATED = "✅ '{}' yangilandi!"
-PRODUCT_DELETED = "✅ '{}' muvaffaqiyatli ochirildi!"
-IMAGE_ADDED = "📸 {}-rasm qoshildi! Yana rasm yuboring yoki 'tayyor' yozing."
+PRODUCT_DELETED = "✅ '{}' o'chirildi!"
+IMAGE_ADDED = "📸 {}-rasm qo'shildi! Yana yuboring yoki 'tayyor' yozing."
 
-# Error messages
-ACCESS_DENIED = "❌ Ruxsat yoq"
+# Error messages (Pure Uzbek)
+ACCESS_DENIED = "❌ Sizga ruxsat yo'q"
 PRODUCT_NOT_FOUND = "❌ Mahsulot topilmadi"
-INVALID_SIZE_FORMAT = "❌ Notogri format. Masalan: 16.5, 17, 18"
+CONTACT_NOT_FOUND = "❌ Kontakt topilmadi"
+INVALID_SIZE_FORMAT = "❌ Noto'g'ri format! Masalan: 16.5, 17, 18"
 ERROR_OCCURRED = "❌ Xatolik: {}"
-INVALID_IMAGES_ERROR = "⚠️ Rasmlar xato - qayta yuklang"
-INVALID_FILE_ID_ERROR = "⚠️ Rasmlar xato (File ID invalid) - qayta yuklang"
+INVALID_IMAGES_ERROR = "⚠️ Rasmlar buzilgan - qayta yuklang"
+INVALID_FILE_ID_ERROR = "⚠️ Rasmlar noto'g'ri - qayta yuklang"
 
-# Confirmation messages
-DELETE_CONFIRMATION = "🗑️ *Ochirishni tasdiqlang*\n\nMahsulot: *{}*\n\nRostdan ham ochirishni xohlaysizmi?"
-DELETE_CANCELLED = "Bekor qilindi"
+# Confirmation
+DELETE_CONFIRMATION = "🗑️ *O'chirishni tasdiqlang*\n\nMahsulot: *{}*\n\nRostdan o'chirasizmi?"
+DELETE_CANCELLED = "❌ Bekor qilindi"
 
-# Contact information
-CONTACT_INFO = (
-    "📞 *Boglanish malumotlari*\n\n"
-    "📱 Telefon: +998 90 123 45 67\n"
-    "💬 Telegram: @dunya_jewellery\n"
-    "📍 Manzil: Toshkent sh., Amir Temur kochasi\n"
-    "🕐 Ish vaqti: 9:00 - 18:00"
-)
+# Contact management
+CONTACT_MANAGEMENT_HEADER = "📞 Kontaktlar"
+NO_CONTACTS_ADMIN = "📞 Kontaktlar yo'q."
+ADD_CONTACT_START = "📞 Yangi kontakt qo'shamiz!\n\nKontakt nomini yuboring:"
+ENTER_TELEGRAM_USERNAME = "📱 Telegram username yuboring (@username yoki bo'sh):"
+ENTER_PHONE_NUMBER = "📞 Telefon raqam yuboring (+998901234567 yoki bo'sh):"
+ENTER_INSTAGRAM_USERNAME = "📷 Instagram username yuboring (@username yoki bo'sh):"
 
-# Contact management messages
-CONTACT_MANAGEMENT_HEADER = "📞 *Kontakt boshqaruvi:*"
-NO_CONTACTS_ADMIN = "📞 Kontaktlar yo'q. Yangi kontakt qo'shing."
-ADD_CONTACT_START = "📞 Yangi kontakt qo'shamiz!\n\nKontakt *nomini* yuboring (masalan: Asosiy, Savdo, Yordam):"
-ENTER_TELEGRAM_USERNAME = "Telegram username yuboring (@username formatida yoki bo'sh qoldiring):"
-ENTER_PHONE_NUMBER = "Telefon raqam yuboring (+998901234567 formatida yoki bo'sh qoldiring):"
-ENTER_INSTAGRAM_USERNAME = "Instagram username yuboring (@username formatida yoki bo'sh qoldiring):"
+# Contact editing
+EDIT_CONTACT_LABEL = "🏷️ Yangi nom yuboring yoki /skip:"
+EDIT_CONTACT_TELEGRAM = "📱 Yangi Telegram yuboring yoki /skip\n\n💡 Hozirgi: {}"
+EDIT_CONTACT_PHONE = "📞 Yangi telefon yuboring yoki /skip\n\n💡 Hozirgi: {}"
+EDIT_CONTACT_INSTAGRAM = "📷 Yangi Instagram yuboring yoki /skip\n\n💡 Hozirgi: {}"
 
-# Contact editing prompts
-EDIT_CONTACT_LABEL = "Yangi *nom* yuboring yoki /skip:"
-EDIT_CONTACT_TELEGRAM = "Yangi *Telegram username* yuboring yoki /skip\n\n📱 Hozirgi: _{}_"
-EDIT_CONTACT_PHONE = "Yangi *telefon raqam* yuboring yoki /skip\n\n📞 Hozirgi: _{}_"
-EDIT_CONTACT_INSTAGRAM = "Yangi *Instagram username* yuboring yoki /skip\n\n📷 Hozirgi: _{}_"
-
-# Contact success messages
+# Contact success
 CONTACT_CREATED = "✅ Kontakt '{}' yaratildi! ID: {}"
 CONTACT_UPDATED = "✅ Kontakt '{}' yangilandi!"
-CONTACT_DELETED = "✅ Kontakt '{}' muvaffaqiyatli o'chirildi!"
+CONTACT_DELETED = "✅ Kontakt '{}' o'chirildi!"
+DELETE_CONTACT_CONFIRMATION = "🗑️ *Kontaktni o'chirish*\n\nKontakt: *{}*\n\nRostdan o'chirasizmi?"
 
-# Contact confirmation
-DELETE_CONTACT_CONFIRMATION = "🗑️ *Kontaktni o'chirishni tasdiqlang*\n\nKontakt: *{}*\n\nRostdan ham o'chirishni xohlaysizmi?"
+# Order message
+ORDER_MESSAGE = (
+    "📞 Buyurtma\n\n"
+    "🆔 Mahsulot: {}\n\n"
+    "📱 Telefon: +998 90 123 45 67\n"
+    "💬 Telegram: @dunya_jewellery"
+)
 
-# Contact display template
+# Templates
+PRODUCT_TEMPLATE_CLIENT = "💍 {}\n\n📝 {}\n📏 O'lchamlar: {}"
+
+PRODUCT_TEMPLATE_ADMIN = (
+    "{} {}\n\n"
+    "📝 {}\n"
+    "📏 O'lchamlar: {}\n"
+    "🖼️ Rasmlar: {} ta\n"
+    "🆔 ID: {}"
+)
+
 CONTACT_TEMPLATE_ADMIN = (
-    "{} *{}*\n\n"
+    "{} {}\n\n"
     "📱 Telegram: {}\n"
     "📞 Telefon: {}\n"
     "📷 Instagram: {}\n"
@@ -99,42 +100,23 @@ CONTACT_TEMPLATE_ADMIN = (
 
 CONTACT_TEMPLATE_CLIENT = "*{}*\n📱 {}\n📞 {}\n📷 {}"
 
-# Order message
-ORDER_MESSAGE = (
-    "📞 Mahsulot ID: {}\n\n"
-    "Buyurtma berish uchun quyidagi raqamga qongiroq qiling:\n"
-    "+998 90 123 45 67\n\n"
-    "Yoki @dunya_jewellery ga yozing"
-)
-
-# Product display templates
-PRODUCT_TEMPLATE_CLIENT = "💍 *{}*\n\n📝 {}\n📏 *Olchamlar:* {}\n\n📞 Buyurtma uchun admin bilan boglanish"
-
-PRODUCT_TEMPLATE_ADMIN = (
-    "{} *{}*\n\n"
-    "📝 {}\n"
-    "📏 *Olchamlar:* {}\n"
-    "🖼️ *Rasmlar:* {} ta\n"
-    "🆔 *ID:* {}"
-)
-
 # Default values
-DEFAULT_DESCRIPTION = "Tavsif yoq"
-DEFAULT_SIZES = "Belgilanmagan"
-DEFAULT_ADMIN_SIZES = "Yoq"
-CURRENT_VALUE_NONE = "Hozir yoq"
+DEFAULT_DESCRIPTION = "Tavsif yo'q"
+DEFAULT_SIZES = "O'lcham yo'q"
+DEFAULT_ADMIN_SIZES = "Yo'q"
+CURRENT_VALUE_NONE = "Hozir yo'q"
 
-# Button texts (will be used in keyboards.py)
+# Button texts
 BTN_PRODUCTS = "💍 Mahsulotlar"
 BTN_CONTACT = "📞 Bog'lanish"
 BTN_ADMIN_PRODUCTS = "📦 Mahsulotlar"
 BTN_ADMIN_CONTACTS = "📞 Kontaktlar"
-BTN_ORDER = "📞 Buyurtma berish"
+BTN_ORDER = "📞 Buyurtma"
 BTN_EDIT = "✏️ Tahrirlash"
-BTN_DELETE = "🗑️ Ochirish"
-BTN_ADD_NEW = "➕ Yangi qoshish"
-BTN_ADD_CONTACT = "➕ Kontakt qoshish"
-BTN_CONFIRM_DELETE = "✅ Ha, ochirish"
-BTN_CANCEL = "❌ Bekor qilish"
-BTN_BACK_MAIN = "🔙 Asosiy menyu"
-BTN_BACK_TO_LIST = "🔙 Ro'yxatga qaytish"
+BTN_DELETE = "🗑️ O'chirish"
+BTN_ADD_NEW = "➕ Yangi"
+BTN_ADD_CONTACT = "➕ Kontakt"
+BTN_CONFIRM_DELETE = "✅ Ha"
+BTN_CANCEL = "❌ Yo'q"
+BTN_BACK_MAIN = "🔙 Asosiy"
+BTN_BACK_TO_LIST = "🔙 Ro'yxat"

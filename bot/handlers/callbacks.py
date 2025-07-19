@@ -1,4 +1,4 @@
-"""Callback query handlers for inline button presses"""
+"""Simple callback query handlers"""
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -23,7 +23,7 @@ from .contacts import (
 )
 
 async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Route callback queries to appropriate handlers"""
+    """Route callback queries to handlers"""
     query = update.callback_query
     data = query.data
 
@@ -71,4 +71,4 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
 
     # Unknown callback
     else:
-        await query.answer("Unknown action")
+        await query.answer("Noma'lum buyruq")

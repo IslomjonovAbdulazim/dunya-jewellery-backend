@@ -16,14 +16,14 @@ async def lifespan(app: FastAPI):
 
     # Create database tables
     create_tables()
-    print("📊 Database tables created")
+    print("📊 Database ready")
 
     # Setup and start bot
     bot_app = setup_bot()
     await bot_app.initialize()
     await bot_app.start()
     await bot_app.updater.start_polling()
-    print("🤖 Telegram bot started")
+    print("🤖 Bot started")
 
     yield
 
@@ -37,12 +37,12 @@ async def lifespan(app: FastAPI):
 # Create FastAPI app
 app = FastAPI(
     title=config.APP_NAME,
-    description="E-commerce API with Telegram Bot Admin",
+    description="Jewelry E-commerce API with Telegram Bot",
     version="1.0.0",
     lifespan=lifespan
 )
 
-# Add CORS middleware
+# Add CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
