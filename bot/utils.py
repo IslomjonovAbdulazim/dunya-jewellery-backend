@@ -7,18 +7,6 @@ from .constants import *
 # Global user states
 user_states = {}
 
-def escape_markdown(text):
-    """Escape special characters for Telegram markdown"""
-    if not text:
-        return ""
-
-    # Escape special markdown characters
-    special_chars = ['*', '_', '`', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    for char in special_chars:
-        text = text.replace(char, f'\\{char}')
-
-    return text
-
 def is_admin(user_id):
     """Check if user is admin"""
     return user_id in config.ADMIN_CHAT_IDS
@@ -37,106 +25,102 @@ def clear_user_state(user_id):
         del user_states[user_id]
 
 def format_product_for_client(product):
-    """Format product for client"""
+    """Format product for client display"""
     try:
         title = getattr(product, 'title', 'Nomsiz mahsulot')
         description = getattr(product, 'description', None) or DEFAULT_DESCRIPTION
 
+        # Get sizes and format them nicely
         sizes = product.get_sizes_list() if hasattr(product, 'get_sizes_list') else []
-        sizes_text = ", ".join([str(s) for s in sizes]) if sizes else DEFAULT_SIZES
+        if sizes:
+            sizes.sort()
+            sizes_text = ", ".join([str(s) for s in sizes])
+        else:
+            sizes_text = DEFAULT_SIZES
 
-        return PRODUCT_TEMPLATE_CLIENT.format(
-            title,
-            description,
-            sizes_text
-        )
+        return PRODUCT_TEMPLATE_CLIENT.format(title, description, sizes_text)
     except Exception as e:
-        return f"❌ Mahsulot ma'lumotini ko'rsatishda xatolik"
+        return "❌ Mahsulot ma'lumotini ko'rsatishda xatolik"
 
 def format_product_for_admin(product):
-    """Format product for admin"""
+    """Format product for admin display"""
     try:
         status = "✅" if getattr(product, 'is_active', False) else "❌"
         title = getattr(product, 'title', 'Nomsiz mahsulot')
         description = getattr(product, 'description', None) or DEFAULT_DESCRIPTION
 
-        sizes = product.get_sizes_list() if hasattr(product, 'get_sizes_list') else []
-        sizes_text = ", ".join([str(s) for s in sizes]) if sizes else DEFAULT_ADMIN_SIZES
+        # Truncate long descriptions
+        if len(description) > 100:
+            description = description[:97] + "..."
 
+        # Get sizes and format them
+        sizes = product.get_sizes_list() if hasattr(product, 'get_sizes_list') else []
+        if sizes:
+            sizes.sort()
+            sizes_text = ", ".join([str(s) for s in sizes])
+        else:
+            sizes_text = DEFAULT_ADMIN_SIZES
+
+        # Get image count
         file_ids = product.get_file_ids_list() if hasattr(product, 'get_file_ids_list') else []
         image_count = len(file_ids)
-
         product_id = getattr(product, 'id', 'N/A')
 
-        return PRODUCT_TEMPLATE_ADMIN.format(
-            status,
-            title,
-            description,
-            sizes_text,
-            image_count,
-            product_id
-        )
+        return PRODUCT_TEMPLATE_ADMIN.format(status, title, description, sizes_text, image_count, product_id)
     except Exception as e:
         return f"❌ Mahsulot ma'lumotini ko'rsatishda xatolik (ID: {getattr(product, 'id', 'N/A')})"
 
 def parse_sizes(text):
-    """Parse sizes from text"""
+    """Parse sizes from text input - SIMPLE VERSION"""
+    if not text or not text.strip():
+        return []
+
     try:
-        return [float(s.strip()) for s in text.split(',') if s.strip()]
+        sizes = []
+        for size_str in text.split(','):
+            size_str = size_str.strip()
+            if size_str:
+                size = float(size_str)
+                # Simple validation: 1-1000 (very loose)
+                if 1.0 <= size <= 1000.0:
+                    sizes.append(size)
+                else:
+                    return None  # Invalid size
+
+        return sorted(list(set(sizes))) if sizes else []
     except ValueError:
         return None
 
 def format_contact_for_admin(contact):
-    """Format contact for admin"""
+    """Format contact for admin display"""
     try:
         # Telegram with @username (works inside Telegram bot)
-        if contact.telegram_username:
-            telegram = f"@{contact.telegram_username}"
-        else:
-            telegram = "Yo'q"
+        telegram = f"@{contact.telegram_username}" if contact.telegram_username else "Yo'q"
 
-        # Get phone numbers (raw format for click-to-call)
+        # Phone numbers (raw format for click-to-call)
         phones = contact.get_phone_numbers_list()
         phones_text = ", ".join(phones) if phones else "Yo'q"
 
         # Instagram with clickable link
-        if contact.instagram_username:
-            instagram = f"https://instagram.com/{contact.instagram_username}"
-        else:
-            instagram = "Yo'q"
+        instagram = f"https://instagram.com/{contact.instagram_username}" if contact.instagram_username else "Yo'q"
 
-        return CONTACT_TEMPLATE_ADMIN.format(
-            telegram,
-            phones_text,
-            instagram
-        )
+        return CONTACT_TEMPLATE_ADMIN.format(telegram, phones_text, instagram)
     except Exception as e:
-        # Fallback if formatting fails
         return f"❌ Kontakt ma'lumotini ko'rsatishda xatolik (ID: {getattr(contact, 'id', 'N/A')})"
 
 def format_contact_for_client(contact):
-    """Format contact for client"""
+    """Format contact for client display"""
     # Telegram with @username (works inside Telegram bot)
-    if contact.telegram_username:
-        telegram = f"@{contact.telegram_username}"
-    else:
-        telegram = "❌"
+    telegram = f"@{contact.telegram_username}" if contact.telegram_username else "❌"
 
-    # Get phone numbers (raw format for click-to-call)
+    # Phone numbers (raw format for click-to-call)
     phones = contact.get_phone_numbers_list()
     phones_text = ", ".join(phones) if phones else "❌"
 
     # Instagram with clickable link
-    if contact.instagram_username:
-        instagram = f"https://instagram.com/{contact.instagram_username}"
-    else:
-        instagram = "❌"
+    instagram = f"https://instagram.com/{contact.instagram_username}" if contact.instagram_username else "❌"
 
-    return CONTACT_TEMPLATE_CLIENT.format(
-        telegram,
-        phones_text,
-        instagram
-    )
+    return CONTACT_TEMPLATE_CLIENT.format(telegram, phones_text, instagram)
 
 def admin_required(func):
     """Admin decorator"""

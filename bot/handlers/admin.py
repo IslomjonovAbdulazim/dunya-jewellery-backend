@@ -1,4 +1,4 @@
-"""Simple admin handlers"""
+"""Simple admin handlers - INLINE KEYBOARD ONLY"""
 
 from telegram import Update, InputMediaPhoto, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
@@ -12,8 +12,7 @@ from ..keyboards import get_products_list_keyboard, get_delete_confirmation_keyb
 
 @admin_required
 async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Show products list for admin"""
-    # Handle both callback and keyboard button
+    """Show products list for admin - INLINE ONLY"""
     if update.callback_query:
         query = update.callback_query
         await query.answer()
@@ -23,6 +22,7 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
         chat_id = update.effective_chat.id
         edit_message = lambda text, **kwargs: context.bot.send_message(chat_id, text, **kwargs)
 
+    # Load real products from database
     db = get_db_session()
     products = db.query(Product).all()
     db.close()
@@ -31,21 +31,17 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
         await edit_message(NO_PRODUCTS_ADMIN, parse_mode='Markdown')
         return
 
-    # Create product list
+    # Create clean product list
     product_list = f"{ALL_PRODUCTS_HEADER}\n\n"
     for product in products:
         status = "✅" if product.is_active else "❌"
-        product_list += f"{status} {product.id} - {product.title}\n"
+        title = product.title[:25] + "..." if len(product.title) > 25 else product.title
+        product_list += f"{status} {product.id} - {title}\n"
 
     product_list += f"\n📋 Jami: {len(products)} ta\n\n👆 Mahsulotni tanlang:"
 
     reply_markup = get_products_list_keyboard(products)
-
-    await edit_message(
-        product_list,
-        reply_markup=reply_markup,
-        parse_mode='Markdown'
-    )
+    await edit_message(product_list, reply_markup=reply_markup, parse_mode='Markdown')
 
 @admin_required
 async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -66,7 +62,7 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
     message = format_product_for_admin(product)
     file_ids = product.get_file_ids_list()
 
-    # Create buttons
+    # Create action buttons
     back_keyboard = [
         [InlineKeyboardButton(BTN_BACK_TO_LIST, callback_data="admin_products")],
         [InlineKeyboardButton(BTN_EDIT, callback_data=f"edit_{product.id}")],
@@ -77,7 +73,6 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
     if file_ids:
         try:
             if len(file_ids) == 1:
-                # Single image
                 await context.bot.send_photo(
                     chat_id=query.message.chat_id,
                     photo=file_ids[0],
@@ -94,20 +89,14 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                     else:
                         media.append(InputMediaPhoto(media=file_id))
 
-                await context.bot.send_media_group(
-                    chat_id=query.message.chat_id,
-                    media=media
-                )
-
-                # Send buttons separately
+                await context.bot.send_media_group(chat_id=query.message.chat_id, media=media)
                 await context.bot.send_message(
                     chat_id=query.message.chat_id,
-                    text=f"🔧 {product.title} - Boshqaruv",
+                    text=f"🔧 *{product.title}* - Boshqaruv",
                     reply_markup=reply_markup,
                     parse_mode='Markdown'
                 )
         except BadRequest:
-            # Handle bad file IDs
             await context.bot.send_message(
                 chat_id=query.message.chat_id,
                 text=f"{message}\n\n{INVALID_FILE_ID_ERROR}",
@@ -115,7 +104,6 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                 parse_mode='Markdown'
             )
     else:
-        # No images
         await context.bot.send_message(
             chat_id=query.message.chat_id,
             text=message,
@@ -145,7 +133,7 @@ async def start_add_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 @admin_required
 async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Start editing product"""
+    """Start product editing"""
     query = update.callback_query
     await query.answer()
 
@@ -173,7 +161,7 @@ async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     await context.bot.send_message(
         chat_id=query.message.chat_id,
-        text=f"📝 Tahrirlash: {product.title}\n\n{EDIT_TITLE_PROMPT}",
+        text=f"📝 *Tahrirlash*: {product.title}\n\n{EDIT_TITLE_PROMPT}",
         parse_mode='Markdown'
     )
 

@@ -1,47 +1,42 @@
-"""Simple keyboard layouts"""
+"""Simple keyboard layouts - UNIFIED INTERFACE"""
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from .constants import *
 
-def get_admin_reply_keyboard():
-    """Admin reply keyboard"""
-    keyboard = [
-        [KeyboardButton(BTN_ADMIN_PRODUCTS), KeyboardButton(BTN_ADMIN_CONTACT)]
-    ]
-    return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
+# UNIFIED INTERFACE - Same buttons for both admin and client
 def get_client_inline_keyboard():
-    """Client inline keyboard"""
+    """Main menu - SAME FOR BOTH ADMIN AND CLIENT"""
     keyboard = [
         [InlineKeyboardButton(BTN_PRODUCTS, callback_data="view_products")],
         [InlineKeyboardButton(BTN_CONTACT, callback_data="contact")]
     ]
     return InlineKeyboardMarkup(keyboard)
 
+def get_client_after_products_keyboard():
+    """Navigation after viewing all products (clients only)"""
+    keyboard = [
+        [InlineKeyboardButton(BTN_CONTACT, callback_data="contact")],
+        [InlineKeyboardButton(BTN_BACK_MAIN, callback_data="back_to_main")]
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
 def get_client_back_keyboard():
-    """Back button for clients"""
+    """Simple back button for clients"""
     keyboard = [
         [InlineKeyboardButton(BTN_BACK_MAIN, callback_data="back_to_main")]
     ]
     return InlineKeyboardMarkup(keyboard)
 
 def get_product_order_keyboard(product_id):
-    """Order button for product"""
+    """Order button for individual products (clients only)"""
     keyboard = [
         [InlineKeyboardButton(BTN_ORDER, callback_data=f"order_{product_id}")]
     ]
     return InlineKeyboardMarkup(keyboard)
 
-def get_admin_product_keyboard(product_id):
-    """Admin product buttons"""
-    keyboard = [
-        [InlineKeyboardButton(BTN_EDIT, callback_data=f"edit_{product_id}")],
-        [InlineKeyboardButton(BTN_DELETE, callback_data=f"delete_{product_id}")]
-    ]
-    return InlineKeyboardMarkup(keyboard)
-
+# ADMIN-SPECIFIC KEYBOARDS (triggered from unified buttons)
 def get_products_list_keyboard(products):
-    """Product list keyboard"""
+    """Product list keyboard for admin"""
     keyboard = []
 
     # Create buttons in rows of 3
@@ -73,7 +68,7 @@ def get_delete_confirmation_keyboard(product_id):
     return InlineKeyboardMarkup(keyboard)
 
 def get_contact_edit_keyboard():
-    """Contact edit options keyboard"""
+    """Contact edit options keyboard for admin"""
     keyboard = [
         [InlineKeyboardButton(BTN_EDIT_TELEGRAM, callback_data="edit_contact_telegram")],
         [InlineKeyboardButton(BTN_EDIT_PHONES, callback_data="edit_contact_phones")],

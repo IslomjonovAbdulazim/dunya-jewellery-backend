@@ -1,4 +1,4 @@
-"""Simple message handlers"""
+"""Simple message handlers - NO SKIP, CLEAN"""
 
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -7,8 +7,6 @@ from database import get_db_session
 from models import Product, Contact
 from ..utils import is_admin, get_user_state, clear_user_state, parse_sizes
 from ..constants import *
-from .admin import show_admin_products
-from .contacts import show_admin_contact
 
 async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle text messages during workflows"""
@@ -23,48 +21,35 @@ async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     text = update.message.text
 
-    # Handle product workflows
+    # Handle product workflows (no /skip)
     if state['action'] in ['add', 'edit']:
-        if text == '/skip' and state['action'] == 'edit':
-            await handle_skip_field(update, context, state)
-            await move_to_next_step(update, context, state)
-        else:
-            await handle_field_input(update, context, state, text)
+        await handle_field_input(update, context, state, text)
 
     # Handle contact workflows
     elif state['action'] == 'edit_contact':
-        # Import here to avoid circular import
         from .contacts import handle_contact_field_edit
         await handle_contact_field_edit(update, context, state, text)
-        # DON'T clear user state here - let the contact handler decide
-
-async def handle_skip_field(update: Update, context: ContextTypes.DEFAULT_TYPE, state):
-    """Handle skipping field during editing"""
-    if state['step'] == 'title':
-        state['title'] = state['current_product'].title
-        await update.message.reply_text(f"✅ Nom o'zgartirilmadi: {state['title']}")
-    elif state['step'] == 'description':
-        state['description'] = state['current_product'].description
-        current_desc = state['description'] or "Tavsif yo'q"
-        await update.message.reply_text(f"✅ Tavsif o'zgartirilmadi: {current_desc}")
-    elif state['step'] == 'sizes':
-        state['sizes'] = state['current_product'].get_sizes_list()
-        current_sizes = ", ".join([str(s) for s in state['sizes']]) if state['sizes'] else "O'lcham yo'q"
-        await update.message.reply_text(f"✅ O'lchamlar o'zgartirilmadi: {current_sizes}")
 
 async def handle_field_input(update: Update, context: ContextTypes.DEFAULT_TYPE, state, text):
-    """Handle field input during product creation/editing"""
+    """Handle field input during product creation/editing - NO SKIP"""
     if state['step'] == 'title':
-        state['title'] = text
+        # Simple title validation
+        if len(text.strip()) < 2:
+            await update.message.reply_text("❌ Nom kamida 2 ta harf bo'lishi kerak!", parse_mode='Markdown')
+            return
+        state['title'] = text.strip()
+
     elif state['step'] == 'description':
-        state['description'] = text
+        state['description'] = text.strip() if text.strip() else None
+
     elif state['step'] == 'sizes':
         sizes = parse_sizes(text)
         if sizes is None:
-            await update.message.reply_text(INVALID_SIZE_FORMAT)
+            await update.message.reply_text(INVALID_SIZE_FORMAT, parse_mode='Markdown')
             return
         state['sizes'] = sizes
-    elif state['step'] == 'images' and text.lower() in ['tayyor', 'done']:
+
+    elif state['step'] == 'images' and text.lower() in ['tayyor', 'done', 'готово']:
         await save_product(update, context, state)
         return
 
@@ -101,19 +86,22 @@ async def send_sizes_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE, 
     else:
         prompt = ENTER_SIZES
 
-    await update.message.reply_text(prompt)
+    await update.message.reply_text(prompt, parse_mode='Markdown')
 
 async def send_images_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE, state):
     """Send images prompt"""
     if state['action'] == 'edit':
-        state['images'] = state['current_product'].get_file_ids_list()
-        current_images = len(state['images'])
+        current_images = len(state['current_product'].get_file_ids_list())
         prompt = EDIT_IMAGES_PROMPT.format(current_images)
+        # Start fresh for new image uploads (like phone numbers)
+        state['images'] = []
+        state['images_started'] = False
     else:
         state['images'] = []
+        state['images_started'] = False
         prompt = ENTER_IMAGES
 
-    await update.message.reply_text(prompt)
+    await update.message.reply_text(prompt, parse_mode='Markdown')
 
 async def save_product(update: Update, context: ContextTypes.DEFAULT_TYPE, state):
     """Save product to database"""
@@ -126,18 +114,23 @@ async def save_product(update: Update, context: ContextTypes.DEFAULT_TYPE, state
         elif state['action'] == 'edit':
             await update_existing_product(update, context, state, db)
     except Exception as e:
-        await update.message.reply_text(ERROR_OCCURRED.format(str(e)))
+        await update.message.reply_text(ERROR_OCCURRED.format(str(e)), parse_mode='Markdown')
     finally:
         db.close()
         clear_user_state(user_id)
 
 async def create_new_product(update: Update, context: ContextTypes.DEFAULT_TYPE, state, db):
     """Create new product"""
+    if not state.get('title'):
+        await update.message.reply_text("❌ Mahsulot nomi kiritilmagan!", parse_mode='Markdown')
+        return
+
     product = Product(
         title=state['title'],
-        description=state['description'],
+        description=state.get('description'),
         is_active=True
     )
+
     product.set_sizes(state.get('sizes', []))
     product.set_file_ids(state.get('images', []))
 
@@ -145,28 +138,30 @@ async def create_new_product(update: Update, context: ContextTypes.DEFAULT_TYPE,
     db.commit()
     db.refresh(product)
 
-    await update.message.reply_text(
-        PRODUCT_CREATED.format(product.title, product.id)
-    )
+    success_msg = PRODUCT_CREATED.format(product.title, product.id)
+    await update.message.reply_text(success_msg, parse_mode='Markdown')
 
 async def update_existing_product(update: Update, context: ContextTypes.DEFAULT_TYPE, state, db):
     """Update existing product"""
     product = db.query(Product).filter(Product.id == state['product_id']).first()
 
     if not product:
-        await update.message.reply_text(PRODUCT_NOT_FOUND)
+        await update.message.reply_text(PRODUCT_NOT_FOUND, parse_mode='Markdown')
         return
 
+    # Update product fields
     product.title = state['title']
-    product.description = state['description']
+    product.description = state.get('description')
     product.set_sizes(state.get('sizes', []))
-    product.set_file_ids(state.get('images', []))
+    product.set_file_ids(state.get('images', []))  # COMPLETE REPLACEMENT
 
     db.commit()
-    await update.message.reply_text(PRODUCT_UPDATED.format(product.title))
+
+    success_msg = PRODUCT_UPDATED.format(product.title)
+    await update.message.reply_text(success_msg, parse_mode='Markdown')
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle photo uploads"""
+    """Handle photo uploads - REPLACE OLD IMAGES"""
     if not is_admin(update.effective_user.id):
         return
 
@@ -179,23 +174,20 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Get highest resolution photo
     file_id = update.message.photo[-1].file_id
 
+    # If this is the first photo, clear old images
+    if not state.get('images_started', False):
+        await update.message.reply_text(IMAGES_REPLACED, parse_mode='Markdown')
+        state['images'] = []  # Clear old images
+        state['images_started'] = True
+
+    # Add new photo
     if 'images' not in state:
         state['images'] = []
 
     state['images'].append(file_id)
+    count = len(state['images'])
 
     await update.message.reply_text(
-        IMAGE_ADDED.format(len(state['images']))
+        IMAGE_ADDED.format(count),
+        parse_mode='Markdown'
     )
-
-async def handle_keyboard_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Handle keyboard button presses"""
-    if not is_admin(update.effective_user.id):
-        return
-
-    text = update.message.text
-
-    if text == BTN_ADMIN_PRODUCTS:
-        await show_admin_products(update, context)
-    elif text == BTN_ADMIN_CONTACT:
-        await show_admin_contact(update, context)

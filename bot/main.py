@@ -1,4 +1,4 @@
-"""Simple bot setup"""
+"""Simple bot setup - CLEAN NAVIGATION"""
 
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters
 import config
@@ -7,11 +7,10 @@ from .handlers.start import start_command, help_command
 from .handlers.admin import start_add_product
 from .handlers.contacts import show_admin_contact
 from .handlers.callbacks import handle_callback_query
-from .handlers.messages import handle_text_message, handle_photo, handle_keyboard_button
-from .constants import BTN_ADMIN_PRODUCTS, BTN_ADMIN_CONTACT
+from .handlers.messages import handle_text_message, handle_photo
 
 def setup_bot():
-    """Setup bot with handlers"""
+    """Setup bot with handlers - CLEAN VERSION"""
     app = Application.builder().token(config.BOT_TOKEN).build()
 
     # Commands
@@ -20,25 +19,16 @@ def setup_bot():
     app.add_handler(CommandHandler("add", start_add_product))
     app.add_handler(CommandHandler("edit_contact", show_admin_contact))
 
-    # Callbacks
+    # Callbacks (main navigation)
     app.add_handler(CallbackQueryHandler(handle_callback_query))
 
-    # Keyboard buttons
-    app.add_handler(
-        MessageHandler(
-            filters.Regex(f"^{BTN_ADMIN_PRODUCTS}$|^{BTN_ADMIN_CONTACT}$"),
-            handle_keyboard_button
-        )
-    )
-
-    # Photos
+    # Photos (for admin product creation)
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 
-    # Text messages
+    # Text messages (for admin workflows only)
     app.add_handler(
         MessageHandler(
-            filters.TEXT & ~filters.COMMAND &
-            ~filters.Regex(f"^{BTN_ADMIN_PRODUCTS}$|^{BTN_ADMIN_CONTACT}$"),
+            filters.TEXT & ~filters.COMMAND,
             handle_text_message
         )
     )

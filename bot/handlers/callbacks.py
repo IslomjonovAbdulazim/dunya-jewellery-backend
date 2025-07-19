@@ -1,9 +1,10 @@
-"""Simple callback query handlers"""
+"""Simple callback query handlers - UNIFIED INTERFACE"""
 
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from .client import view_products_client, handle_order_request, back_to_main_menu
+from ..utils import is_admin
+from .client import view_products_client, handle_order_request, back_to_main_menu, show_contact_info_client
 from .admin import (
     show_admin_products,
     start_add_product,
@@ -19,81 +20,67 @@ from .contacts import (
 )
 
 async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Route callback queries to handlers"""
+    """Route callback queries - UNIFIED INTERFACE"""
     query = update.callback_query
     data = query.data
+    user_id = query.from_user.id
 
-    # Client callbacks
-    if data == "view_products":
-        await view_products_client(update, context)
-    elif data == "contact":
-        # Get real contact data from database
-        from database import get_db_session
-        from models import Contact
+    try:
+        # UNIFIED BUTTONS - Same interface, different functionality based on user type
+        if data == "view_products":
+            if is_admin(user_id):
+                # Admin clicks "💍 Mahsulotlar" → sees admin products management
+                await show_admin_products(update, context)
+            else:
+                # Client clicks "💍 Mahsulotlar" → sees client products view
+                await view_products_client(update, context)
 
-        db = get_db_session()
-        contact = db.query(Contact).first()
-        db.close()
+        elif data == "contact":
+            if is_admin(user_id):
+                # Admin clicks "📞 Bog'lanish" → sees admin contact management
+                await show_admin_contact(update, context)
+            else:
+                # Client clicks "📞 Bog'lanish" → sees client contact info
+                await show_contact_info_client(update, context)
 
-        await query.answer()
+        # CLIENT-SPECIFIC CALLBACKS
+        elif data.startswith("order_"):
+            await handle_order_request(update, context)
+        elif data == "back_to_main":
+            await back_to_main_menu(update, context)
 
-        if not contact:
-            # Fallback if no contact in database
-            await query.edit_message_text(
-                "📞 Bog'lanish\n\n📱 Telefon: +998901234567\n💬 Telegram: @dunya_jewellery\n📷 Instagram: https://instagram.com/dunya_jewellery"
-            )
+        # ADMIN-SPECIFIC CALLBACKS (only admins can trigger these)
+        elif data == "admin_products":
+            if is_admin(user_id):
+                await show_admin_products(update, context)
+        elif data == "admin_add":
+            if is_admin(user_id):
+                await start_add_product(update, context)
+        elif data.startswith("view_product_"):
+            if is_admin(user_id):
+                await show_single_product(update, context)
+        elif data.startswith("edit_contact_"):
+            if is_admin(user_id):
+                await start_edit_contact_field(update, context)
+        elif data.startswith("edit_"):
+            if is_admin(user_id):
+                await start_edit_product(update, context)
+        elif data.startswith("delete_"):
+            if is_admin(user_id):
+                await confirm_delete_product(update, context)
+        elif data.startswith("confirm_delete_"):
+            if is_admin(user_id):
+                await delete_product(update, context)
+
+        # GENERAL CALLBACKS
+        elif data == "cancel_delete":
+            await cancel_delete(update, context)
+
+        # Unknown callback
         else:
-            # Use real contact data
-            contact_message = "📞 Bog'lanish ma'lumotlari\n\n"
+            await query.answer("❌ Noma'lum buyruq")
 
-            # Telegram with @username (works inside Telegram)
-            if contact.telegram_username:
-                contact_message += f"💬 Telegram: @{contact.telegram_username}\n"
-
-            # Phone numbers (raw format for click-to-call)
-            phones = contact.get_phone_numbers_list()
-            if phones:
-                if len(phones) == 1:
-                    contact_message += f"📱 Telefon: {phones[0]}\n"
-                else:
-                    contact_message += f"📱 Telefonlar:\n"
-                    for phone in phones:
-                        contact_message += f"  • {phone}\n"
-
-            # Instagram with full URL
-            if contact.instagram_username:
-                contact_message += f"📷 Instagram: https://instagram.com/{contact.instagram_username}\n"
-
-            await query.edit_message_text(contact_message)
-    elif data.startswith("order_"):
-        await handle_order_request(update, context)
-    elif data == "back_to_main":
-        await back_to_main_menu(update, context)
-
-    # Admin contact callbacks (check these BEFORE general edit_)
-    elif data == "admin_contact":
-        await show_admin_contact(update, context)
-    elif data.startswith("edit_contact_"):
-        await start_edit_contact_field(update, context)
-
-    # Admin product callbacks
-    elif data == "admin_products":
-        await show_admin_products(update, context)
-    elif data == "admin_add":
-        await start_add_product(update, context)
-    elif data.startswith("view_product_"):
-        await show_single_product(update, context)
-    elif data.startswith("edit_"):
-        await start_edit_product(update, context)
-    elif data.startswith("delete_"):
-        await confirm_delete_product(update, context)
-    elif data.startswith("confirm_delete_"):
-        await delete_product(update, context)
-
-    # General callbacks
-    elif data == "cancel_delete":
-        await cancel_delete(update, context)
-
-    # Unknown callback
-    else:
-        await query.answer("Noma'lum buyruq")
+    except Exception as e:
+        # Handle any callback errors gracefully
+        await query.answer("❌ Xatolik yuz berdi")
+        print(f"Callback error: {e}")  # For debugging
