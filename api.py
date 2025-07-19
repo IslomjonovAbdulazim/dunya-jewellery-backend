@@ -26,10 +26,11 @@ class ProductResponse(BaseModel):
 
 class ContactResponse(BaseModel):
     id: int
-    label: str
-    telegram_username: Optional[str]
-    phone_number: Optional[str]
-    instagram_username: Optional[str]
+    telegram_username: Optional[str]  # Raw username for compatibility
+    telegram_url: Optional[str]       # Full URL for web apps
+    phone_numbers: List[str]          # Raw format for click-to-call
+    instagram_username: Optional[str] # Raw username for compatibility
+    instagram_url: Optional[str]      # Full URL for web apps
     is_active: bool
 
     class Config:
@@ -83,38 +84,29 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
     )
 
 
-# Contacts
-@router.get("/contacts", response_model=List[ContactResponse])
-async def get_contacts(db: Session = Depends(get_db)):
-    """Get all active contacts"""
-    contacts = db.query(Contact).filter(Contact.is_active == True).all()
-
-    result = []
-    for contact in contacts:
-        result.append(ContactResponse(
-            id=contact.id,
-            label=contact.label,
-            telegram_username=contact.telegram_username,
-            phone_number=contact.phone_number,
-            instagram_username=contact.instagram_username,
-            is_active=contact.is_active
-        ))
-
-    return result
-
-
-@router.get("/contacts/{contact_id}", response_model=ContactResponse)
-async def get_contact(contact_id: int, db: Session = Depends(get_db)):
-    """Get single contact"""
-    contact = db.query(Contact).filter(Contact.id == contact_id).first()
+# Contact (single record)
+@router.get("/contact", response_model=ContactResponse)
+async def get_contact(db: Session = Depends(get_db)):
+    """Get the contact information"""
+    contact = db.query(Contact).first()  # Get the first (and only) contact
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
 
+    # Format URLs for web applications
+    telegram_url = None
+    if contact.telegram_username:
+        telegram_url = f"https://t.me/{contact.telegram_username}"
+
+    instagram_url = None
+    if contact.instagram_username:
+        instagram_url = f"https://instagram.com/{contact.instagram_username}"
+
     return ContactResponse(
         id=contact.id,
-        label=contact.label,
-        telegram_username=contact.telegram_username,
-        phone_number=contact.phone_number,
-        instagram_username=contact.instagram_username,
+        telegram_username=contact.telegram_username,  # Raw username
+        telegram_url=telegram_url,                    # Web URL
+        phone_numbers=contact.get_phone_numbers_list(), # Raw format
+        instagram_username=contact.instagram_username, # Raw username
+        instagram_url=instagram_url,                   # Web URL
         is_active=contact.is_active
     )

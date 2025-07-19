@@ -9,7 +9,7 @@ ADMIN_HELP = (
     "🔧 *Admin Buyruqlari*\n\n"
     "• `/start` - Asosiy menyu\n"
     "• `/add` - Mahsulot qo'shish\n"
-    "• `/add_contact` - Kontakt qo'shish"
+    "• `/edit_contact` - Kontakt tahrirlash"
 )
 
 CLIENT_HELP = "💍 *Dunya Jewellery*\n\n• `/start` - Asosiy menyu\n• Mahsulotlarni ko'rish uchun tugmalardan foydalaning"
@@ -52,32 +52,20 @@ DELETE_CONFIRMATION = "🗑️ *O'chirishni tasdiqlang*\n\nMahsulot: *{}*\n\nRos
 DELETE_CANCELLED = "❌ Bekor qilindi"
 
 # Contact management
-CONTACT_MANAGEMENT_HEADER = "📞 Kontaktlar"
-NO_CONTACTS_ADMIN = "📞 Kontaktlar yo'q."
-ADD_CONTACT_START = "📞 Yangi kontakt qo'shamiz!\n\nKontakt nomini yuboring:"
+CONTACT_MANAGEMENT_HEADER = "📞 Kontakt ma'lumotlari"
+CONTACT_INFO_CURRENT = "📞 *Hozirgi kontakt ma'lumotlari*"
+EDIT_CONTACT_START = "📞 Kontakt ma'lumotlarini tahrirlash\n\nQaysi qismini o'zgartirmoqchisiz?"
 ENTER_TELEGRAM_USERNAME = "📱 Telegram username yuboring (@username yoki bo'sh):"
-ENTER_PHONE_NUMBER = "📞 Telefon raqam yuboring (+998901234567 yoki bo'sh):"
+ENTER_PHONE_NUMBERS = "📞 Telefon raqamlarni yuboring:\n\n📝 Format: +998901234567, +998907654321\n💡 Faqat O'zbekiston raqamlari qabul qilinadi"
 ENTER_INSTAGRAM_USERNAME = "📷 Instagram username yuboring (@username yoki bo'sh):"
 
 # Contact editing
-EDIT_CONTACT_LABEL = "🏷️ Yangi nom yuboring yoki /skip:"
 EDIT_CONTACT_TELEGRAM = "📱 Yangi Telegram yuboring yoki /skip\n\n💡 Hozirgi: {}"
-EDIT_CONTACT_PHONE = "📞 Yangi telefon yuboring yoki /skip\n\n💡 Hozirgi: {}"
+EDIT_CONTACT_PHONES = "📞 Yangi telefon raqamlar ro'yxatini yuboring yoki /skip\n\n💡 Hozirgi: {}\n\n📝 Format: +998901234567, +998907654321\n💡 Faqat O'zbekiston raqamlari\n⚠️ Eski raqamlar o'chiriladi, yangi ro'yxat qo'shiladi"
 EDIT_CONTACT_INSTAGRAM = "📷 Yangi Instagram yuboring yoki /skip\n\n💡 Hozirgi: {}"
 
 # Contact success
-CONTACT_CREATED = "✅ Kontakt '{}' yaratildi! ID: {}"
-CONTACT_UPDATED = "✅ Kontakt '{}' yangilandi!"
-CONTACT_DELETED = "✅ Kontakt '{}' o'chirildi!"
-DELETE_CONTACT_CONFIRMATION = "🗑️ *Kontaktni o'chirish*\n\nKontakt: *{}*\n\nRostdan o'chirasizmi?"
-
-# Order message
-ORDER_MESSAGE = (
-    "📞 Buyurtma\n\n"
-    "🆔 Mahsulot: {}\n\n"
-    "📱 Telefon: +998 90 123 45 67\n"
-    "💬 Telegram: @dunya_jewellery"
-)
+CONTACT_UPDATED = "✅ Kontakt ma'lumotlari yangilandi!"
 
 # Templates
 PRODUCT_TEMPLATE_CLIENT = "💍 {}\n\n📝 {}\n📏 O'lchamlar: {}"
@@ -91,14 +79,13 @@ PRODUCT_TEMPLATE_ADMIN = (
 )
 
 CONTACT_TEMPLATE_ADMIN = (
-    "{} {}\n\n"
+    "📞 *Kontakt ma'lumotlari*\n\n"
     "📱 Telegram: {}\n"
-    "📞 Telefon: {}\n"
-    "📷 Instagram: {}\n"
-    "🆔 ID: {}"
+    "📞 Telefonlar: {}\n"
+    "📷 Instagram: {}"
 )
 
-CONTACT_TEMPLATE_CLIENT = "*{}*\n📱 {}\n📞 {}\n📷 {}"
+CONTACT_TEMPLATE_CLIENT = "📱 {}\n📞 {}\n📷 {}"
 
 # Default values
 DEFAULT_DESCRIPTION = "Tavsif yo'q"
@@ -110,13 +97,17 @@ CURRENT_VALUE_NONE = "Hozir yo'q"
 BTN_PRODUCTS = "💍 Mahsulotlar"
 BTN_CONTACT = "📞 Bog'lanish"
 BTN_ADMIN_PRODUCTS = "📦 Mahsulotlar"
-BTN_ADMIN_CONTACTS = "📞 Kontaktlar"
+BTN_ADMIN_CONTACT = "📞 Kontakt"
 BTN_ORDER = "📞 Buyurtma"
 BTN_EDIT = "✏️ Tahrirlash"
 BTN_DELETE = "🗑️ O'chirish"
 BTN_ADD_NEW = "➕ Yangi"
-BTN_ADD_CONTACT = "➕ Kontakt"
 BTN_CONFIRM_DELETE = "✅ Ha"
 BTN_CANCEL = "❌ Yo'q"
 BTN_BACK_MAIN = "🔙 Asosiy"
 BTN_BACK_TO_LIST = "🔙 Ro'yxat"
+
+# Contact edit options
+BTN_EDIT_TELEGRAM = "📱 Telegram"
+BTN_EDIT_PHONES = "📞 Telefonlar"
+BTN_EDIT_INSTAGRAM = "📷 Instagram"

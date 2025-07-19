@@ -88,16 +88,16 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
                 reply_markup=reply_markup
             )
 
-async def show_contact_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Show contact information"""
+async def show_contact_info_client(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Show contact information for clients"""
     query = update.callback_query
     await query.answer()
 
     db = get_db_session()
-    contacts = db.query(Contact).filter(Contact.is_active == True).all()
+    contact = db.query(Contact).first()
     db.close()
 
-    if not contacts:
+    if not contact:
         # Fallback to default contact
         await query.edit_message_text(
             "📞 Bog'lanish\n\n📱 Telefon: +998 90 123 45 67\n💬 Telegram: @dunya_jewellery"
@@ -107,21 +107,22 @@ async def show_contact_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Build contact message
     contact_message = "📞 Bog'lanish ma'lumotlari\n\n"
 
-    for contact in contacts:
-        contact_message += f"👤 {contact.label}\n"
+    if contact.telegram_username:
+        contact_message += f"💬 Telegram: https://t.me/{contact.telegram_username}\n"
 
-        if contact.telegram_username:
-            contact_message += f"💬 Telegram: @{contact.telegram_username}\n"
+    phones = contact.get_phone_numbers_list()
+    if phones:
+        if len(phones) == 1:
+            contact_message += f"📱 Telefon: {phones[0]}\n"
+        else:
+            contact_message += f"📱 Telefonlar:\n"
+            for phone in phones:
+                contact_message += f"  • {phone}\n"
 
-        if contact.phone_number:
-            contact_message += f"📱 Telefon: {contact.phone_number}\n"
+    if contact.instagram_username:
+        contact_message += f"📷 Instagram: https://instagram.com/{contact.instagram_username}\n"
 
-        if contact.instagram_username:
-            contact_message += f"📷 Instagram: @{contact.instagram_username}\n"
-
-        contact_message += "\n"
-
-    await query.edit_message_text(contact_message)
+    await query.edit_message_text(contact_message, parse_mode='Markdown')
 
 async def handle_order_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle order requests"""
@@ -130,9 +131,37 @@ async def handle_order_request(update: Update, context: ContextTypes.DEFAULT_TYP
 
     product_id = query.data.split("_")[1]
 
-    await query.edit_message_text(
-        ORDER_MESSAGE.format(product_id)
-    )
+    # Get real contact data for order message
+    db = get_db_session()
+    contact = db.query(Contact).first()
+    db.close()
+
+    if contact:
+        # Build order message with real contact data
+        order_message = f"📞 Buyurtma\n\n🆔 Mahsulot: {product_id}\n\n"
+
+        # Add phone numbers (raw format for click-to-call)
+        phones = contact.get_phone_numbers_list()
+        if phones:
+            if len(phones) == 1:
+                order_message += f"📱 Telefon: {phones[0]}\n"
+            else:
+                order_message += f"📱 Telefonlar:\n"
+                for phone in phones:
+                    order_message += f"  • {phone}\n"
+
+        # Add Telegram (@username works inside Telegram)
+        if contact.telegram_username:
+            order_message += f"💬 Telegram: @{contact.telegram_username}\n"
+
+        # Add Instagram (full URL)
+        if contact.instagram_username:
+            order_message += f"📷 Instagram: https://instagram.com/{contact.instagram_username}"
+    else:
+        # Fallback if no contact data
+        order_message = f"📞 Buyurtma\n\n🆔 Mahsulot: {product_id}\n\n📱 Telefon: +998901234567\n💬 Telegram: @dunya_jewellery\n📷 Instagram: https://instagram.com/dunya_jewellery"
+
+    await query.edit_message_text(order_message)
 
 async def back_to_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Back to main menu"""

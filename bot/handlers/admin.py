@@ -18,7 +18,7 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
         query = update.callback_query
         await query.answer()
         chat_id = query.message.chat_id
-        edit_message = query.edit_message_text
+        edit_message = lambda text, **kwargs: query.edit_message_text(text, **kwargs)
     else:
         chat_id = update.effective_chat.id
         edit_message = lambda text, **kwargs: context.bot.send_message(chat_id, text, **kwargs)
@@ -28,7 +28,7 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
     db.close()
 
     if not products:
-        await edit_message(NO_PRODUCTS_ADMIN)
+        await edit_message(NO_PRODUCTS_ADMIN, parse_mode='Markdown')
         return
 
     # Create product list
@@ -43,7 +43,8 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     await edit_message(
         product_list,
-        reply_markup=reply_markup
+        reply_markup=reply_markup,
+        parse_mode='Markdown'
     )
 
 @admin_required
@@ -59,7 +60,7 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
     db.close()
 
     if not product:
-        await query.edit_message_text(PRODUCT_NOT_FOUND)
+        await query.edit_message_text(PRODUCT_NOT_FOUND, parse_mode='Markdown')
         return
 
     message = format_product_for_admin(product)
@@ -81,7 +82,8 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                     chat_id=query.message.chat_id,
                     photo=file_ids[0],
                     caption=message,
-                    reply_markup=reply_markup
+                    reply_markup=reply_markup,
+                    parse_mode='Markdown'
                 )
             else:
                 # Multiple images
@@ -101,21 +103,24 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                 await context.bot.send_message(
                     chat_id=query.message.chat_id,
                     text=f"🔧 {product.title} - Boshqaruv",
-                    reply_markup=reply_markup
+                    reply_markup=reply_markup,
+                    parse_mode='Markdown'
                 )
         except BadRequest:
             # Handle bad file IDs
             await context.bot.send_message(
                 chat_id=query.message.chat_id,
                 text=f"{message}\n\n{INVALID_FILE_ID_ERROR}",
-                reply_markup=reply_markup
+                reply_markup=reply_markup,
+                parse_mode='Markdown'
             )
     else:
         # No images
         await context.bot.send_message(
             chat_id=query.message.chat_id,
             text=message,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
         )
 
 @admin_required
@@ -136,7 +141,7 @@ async def start_add_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
         'step': 'title'
     })
 
-    await send_message(ADD_PRODUCT_START)
+    await send_message(ADD_PRODUCT_START, parse_mode='Markdown')
 
 @admin_required
 async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -154,7 +159,8 @@ async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if not product:
         await context.bot.send_message(
             chat_id=query.message.chat_id,
-            text=PRODUCT_NOT_FOUND
+            text=PRODUCT_NOT_FOUND,
+            parse_mode='Markdown'
         )
         return
 
@@ -167,7 +173,8 @@ async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     await context.bot.send_message(
         chat_id=query.message.chat_id,
-        text=f"📝 Tahrirlash: {product.title}\n\n{EDIT_TITLE_PROMPT}"
+        text=f"📝 Tahrirlash: {product.title}\n\n{EDIT_TITLE_PROMPT}",
+        parse_mode='Markdown'
     )
 
 @admin_required
@@ -185,7 +192,8 @@ async def confirm_delete_product(update: Update, context: ContextTypes.DEFAULT_T
     if not product:
         await context.bot.send_message(
             chat_id=query.message.chat_id,
-            text=PRODUCT_NOT_FOUND
+            text=PRODUCT_NOT_FOUND,
+            parse_mode='Markdown'
         )
         return
 
@@ -193,7 +201,8 @@ async def confirm_delete_product(update: Update, context: ContextTypes.DEFAULT_T
     await context.bot.send_message(
         chat_id=query.message.chat_id,
         text=DELETE_CONFIRMATION.format(product.title),
-        reply_markup=reply_markup
+        reply_markup=reply_markup,
+        parse_mode='Markdown'
     )
 
 @admin_required
@@ -211,7 +220,8 @@ async def delete_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.close()
         await context.bot.send_message(
             chat_id=query.message.chat_id,
-            text=PRODUCT_NOT_FOUND
+            text=PRODUCT_NOT_FOUND,
+            parse_mode='Markdown'
         )
         return
 
@@ -222,7 +232,8 @@ async def delete_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await context.bot.send_message(
         chat_id=query.message.chat_id,
-        text=PRODUCT_DELETED.format(product_title)
+        text=PRODUCT_DELETED.format(product_title),
+        parse_mode='Markdown'
     )
 
 async def cancel_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):

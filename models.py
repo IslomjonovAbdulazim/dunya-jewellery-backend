@@ -49,10 +49,22 @@ class Contact(Base):
     __tablename__ = "contacts"
 
     id = Column(Integer, primary_key=True)
-    label = Column(String(100), nullable=False)
     telegram_username = Column(String(100))
-    phone_number = Column(String(20))
+    phone_numbers = Column(Text)  # "phone1,phone2,phone3"
     instagram_username = Column(String(100))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    def get_phone_numbers_list(self):
+        """Return phone numbers as list"""
+        if not self.phone_numbers:
+            return []
+        return [p.strip() for p in self.phone_numbers.split(",") if p.strip()]
+
+    def set_phone_numbers(self, phone_list):
+        """Set phone numbers from list"""
+        if phone_list:
+            self.phone_numbers = ",".join([str(p) for p in phone_list])
+        else:
+            self.phone_numbers = ""

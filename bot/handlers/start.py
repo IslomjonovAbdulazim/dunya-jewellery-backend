@@ -16,14 +16,16 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup = get_admin_reply_keyboard()
         await update.message.reply_text(
             ADMIN_WELCOME,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
         )
     else:
         # Client gets inline keyboard
         reply_markup = get_client_inline_keyboard()
         await update.message.reply_text(
             CLIENT_WELCOME,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            parse_mode='Markdown'
         )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -31,6 +33,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     if is_admin(user_id):
-        await update.message.reply_text(ADMIN_HELP)
+        await update.message.reply_text(ADMIN_HELP, parse_mode='Markdown')
     else:
-        await update.message.reply_text(CLIENT_HELP)
+        await update.message.reply_text(CLIENT_HELP, parse_mode='Markdown')

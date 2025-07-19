@@ -6,7 +6,7 @@ from .constants import *
 def get_admin_reply_keyboard():
     """Admin reply keyboard"""
     keyboard = [
-        [KeyboardButton(BTN_ADMIN_PRODUCTS), KeyboardButton(BTN_ADMIN_CONTACTS)]
+        [KeyboardButton(BTN_ADMIN_PRODUCTS), KeyboardButton(BTN_ADMIN_CONTACT)]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -72,42 +72,11 @@ def get_delete_confirmation_keyboard(product_id):
     ]
     return InlineKeyboardMarkup(keyboard)
 
-def get_contacts_list_keyboard(contacts):
-    """Contact list keyboard"""
-    keyboard = []
-
-    # Create buttons in rows of 2
-    row = []
-    for contact in contacts:
-        status_icon = "✅" if contact.is_active else "❌"
-        button_text = f"{status_icon} {contact.id} - {contact.label}"
-        row.append(InlineKeyboardButton(button_text, callback_data=f"view_contact_{contact.id}"))
-
-        if len(row) == 2:
-            keyboard.append(row)
-            row = []
-
-    # Add remaining buttons
-    if row:
-        keyboard.append(row)
-
-    # Add "Add New Contact" button
-    keyboard.append([InlineKeyboardButton(BTN_ADD_CONTACT, callback_data="admin_add_contact")])
-
-    return InlineKeyboardMarkup(keyboard)
-
-def get_admin_contact_keyboard(contact_id):
-    """Admin contact buttons"""
+def get_contact_edit_keyboard():
+    """Contact edit options keyboard"""
     keyboard = [
-        [InlineKeyboardButton(BTN_EDIT, callback_data=f"edit_contact_{contact_id}")],
-        [InlineKeyboardButton(BTN_DELETE, callback_data=f"delete_contact_{contact_id}")]
-    ]
-    return InlineKeyboardMarkup(keyboard)
-
-def get_delete_contact_confirmation_keyboard(contact_id):
-    """Contact delete confirmation buttons"""
-    keyboard = [
-        [InlineKeyboardButton(BTN_CONFIRM_DELETE, callback_data=f"confirm_delete_contact_{contact_id}")],
-        [InlineKeyboardButton(BTN_CANCEL, callback_data="cancel_delete")]
+        [InlineKeyboardButton(BTN_EDIT_TELEGRAM, callback_data="edit_contact_telegram")],
+        [InlineKeyboardButton(BTN_EDIT_PHONES, callback_data="edit_contact_phones")],
+        [InlineKeyboardButton(BTN_EDIT_INSTAGRAM, callback_data="edit_contact_instagram")]
     ]
     return InlineKeyboardMarkup(keyboard)

@@ -89,22 +89,26 @@ def parse_sizes(text):
 def format_contact_for_admin(contact):
     """Format contact for admin"""
     try:
-        status = "✅" if contact.is_active else "❌"
+        # Telegram with @username (works inside Telegram bot)
+        if contact.telegram_username:
+            telegram = f"@{contact.telegram_username}"
+        else:
+            telegram = "Yo'q"
 
-        # Safely get contact fields
-        label = contact.label or "Nomsiz"
-        telegram = contact.telegram_username or "Yo'q"
-        phone = contact.phone_number or "Yo'q"
-        instagram = contact.instagram_username or "Yo'q"
-        contact_id = getattr(contact, 'id', 'N/A')
+        # Get phone numbers (raw format for click-to-call)
+        phones = contact.get_phone_numbers_list()
+        phones_text = ", ".join(phones) if phones else "Yo'q"
+
+        # Instagram with clickable link
+        if contact.instagram_username:
+            instagram = f"https://instagram.com/{contact.instagram_username}"
+        else:
+            instagram = "Yo'q"
 
         return CONTACT_TEMPLATE_ADMIN.format(
-            status,
-            label,
             telegram,
-            phone,
-            instagram,
-            contact_id
+            phones_text,
+            instagram
         )
     except Exception as e:
         # Fallback if formatting fails
@@ -112,14 +116,25 @@ def format_contact_for_admin(contact):
 
 def format_contact_for_client(contact):
     """Format contact for client"""
-    telegram = f"@{contact.telegram_username}" if contact.telegram_username else "❌"
-    phone = contact.phone_number if contact.phone_number else "❌"
-    instagram = f"@{contact.instagram_username}" if contact.instagram_username else "❌"
+    # Telegram with @username (works inside Telegram bot)
+    if contact.telegram_username:
+        telegram = f"@{contact.telegram_username}"
+    else:
+        telegram = "❌"
+
+    # Get phone numbers (raw format for click-to-call)
+    phones = contact.get_phone_numbers_list()
+    phones_text = ", ".join(phones) if phones else "❌"
+
+    # Instagram with clickable link
+    if contact.instagram_username:
+        instagram = f"https://instagram.com/{contact.instagram_username}"
+    else:
+        instagram = "❌"
 
     return CONTACT_TEMPLATE_CLIENT.format(
-        contact.label,
         telegram,
-        phone,
+        phones_text,
         instagram
     )
 
