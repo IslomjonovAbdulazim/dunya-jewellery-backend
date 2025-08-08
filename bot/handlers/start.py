@@ -17,7 +17,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             CLIENT_WELCOME,  # Same welcome message
             reply_markup=reply_markup,
-            parse_mode='Markdown'
+            parse_mode='MarkdownV2'
         )
     else:
         # Client gets same interface
@@ -25,7 +25,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             CLIENT_WELCOME,
             reply_markup=reply_markup,
-            parse_mode='Markdown'
+            parse_mode='MarkdownV2'
         )
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -33,6 +33,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
 
     if is_admin(user_id):
-        await update.message.reply_text(ADMIN_HELP, parse_mode='Markdown')
+        await update.message.reply_text(ADMIN_HELP, parse_mode='MarkdownV2')
     else:
-        await update.message.reply_text(CLIENT_HELP, parse_mode='Markdown')
+        await update.message.reply_text(CLIENT_HELP, parse_mode='MarkdownV2')

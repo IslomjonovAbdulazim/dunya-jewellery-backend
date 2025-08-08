@@ -1,6 +1,7 @@
 """Simple contact management handlers"""
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.helpers import escape_markdown
 from telegram.ext import ContextTypes
 
 from database import get_db_session
@@ -83,14 +84,21 @@ async def start_edit_contact_field(update: Update, context: ContextTypes.DEFAULT
     })
 
     if field == 'telegram':
-        current_value = contact.telegram_username or CURRENT_VALUE_NONE
+        current_value_raw = contact.telegram_username or CURRENT_VALUE_NONE
+        # Escape for MarkdownV2
+        current_value = ("@" + escape_markdown(current_value_raw, version=2)) if contact.telegram_username else escape_markdown(CURRENT_VALUE_NONE, version=2)
         prompt = EDIT_CONTACT_TELEGRAM.format(current_value)
     elif field == 'phones':
         phones = contact.get_phone_numbers_list()
-        current_value = ", ".join(phones) if phones else CURRENT_VALUE_NONE
+        if phones:
+            safe_phones = ", ".join(p.replace('+', '\\+') for p in phones)
+            current_value = escape_markdown(safe_phones, version=2)
+        else:
+            current_value = escape_markdown(CURRENT_VALUE_NONE, version=2)
         prompt = EDIT_CONTACT_PHONES.format(current_value)
     elif field == 'instagram':
-        current_value = contact.instagram_username or CURRENT_VALUE_NONE
+        current_value_raw = contact.instagram_username or CURRENT_VALUE_NONE
+        current_value = escape_markdown(current_value_raw, version=2)
         prompt = EDIT_CONTACT_INSTAGRAM.format(current_value)
 
     await context.bot.send_message(

@@ -59,9 +59,15 @@ async def handle_callback_query(update: Update, context: ContextTypes.DEFAULT_TY
         elif data.startswith("view_product_"):
             if is_admin(user_id):
                 await show_single_product(update, context)
+            else:
+                await query.answer("❌ Noma'lum buyruq")
+                return
         elif data.startswith("edit_contact_"):
             if is_admin(user_id):
                 await start_edit_contact_field(update, context)
+            else:
+                await query.answer("❌ Sizga ruxsat yo'q")
+                return
         elif data.startswith("edit_"):
             if is_admin(user_id):
                 await start_edit_product(update, context)
