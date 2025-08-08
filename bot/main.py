@@ -11,6 +11,8 @@ from .handlers.messages import handle_text_message, handle_photo
 
 def setup_bot():
     """Setup bot with handlers - CLEAN VERSION"""
+    if not config.BOT_TOKEN:
+        raise RuntimeError("BOT_TOKEN is not set. Please define it in the environment.")
     app = Application.builder().token(config.BOT_TOKEN).build()
 
     # Commands

@@ -45,13 +45,22 @@ async def health_check():
 
 # Products
 @router.get("/products", response_model=List[ProductResponse])
-async def get_products(active_only: bool = True, db: Session = Depends(get_db)):
+async def get_products(
+    active_only: bool = True,
+    limit: int = 50,
+    offset: int = 0,
+    db: Session = Depends(get_db)
+):
     """Get products from database"""
-    # Load real products from database
+    # Sanitize pagination
+    limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+
+    # Load real products from database with simple pagination and ordering
+    query = db.query(Product)
     if active_only:
-        products = db.query(Product).filter(Product.is_active == True).all()
-    else:
-        products = db.query(Product).all()
+        query = query.filter(Product.is_active == True)
+    products = query.order_by(Product.created_at.desc()).offset(offset).limit(limit).all()
 
     # Format response with real data
     result = []
@@ -96,7 +105,7 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
 async def get_contact(db: Session = Depends(get_db)):
     """Get the contact information"""
     # Load real contact from database
-    contact = db.query(Contact).first()  # Get the first (and only) contact
+    contact = db.query(Contact).filter(Contact.is_active == True).order_by(Contact.updated_at.desc()).first()
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
 

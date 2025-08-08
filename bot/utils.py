@@ -1,6 +1,5 @@
 """Simple utility functions for the bot"""
 
-import re
 import config
 from .constants import *
 

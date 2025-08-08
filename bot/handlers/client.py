@@ -46,7 +46,7 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
             try:
                 if len(file_ids) == 1:
                     await context.bot.send_photo(
-                        chat_id=query.message.chat_id,
+                        chat_id=query.message.chat.id,
                         photo=file_ids[0],
                         caption=message,
                         reply_markup=reply_markup,
@@ -61,23 +61,23 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
                         else:
                             media.append(InputMediaPhoto(media=file_id))
 
-                    await context.bot.send_media_group(chat_id=query.message.chat_id, media=media)
+                    await context.bot.send_media_group(chat_id=query.message.chat.id, media=media)
                     await context.bot.send_message(
-                        chat_id=query.message.chat_id,
+                        chat_id=query.message.chat.id,
                         text=f"📞 *Mahsulot*: {product.title}",
                         reply_markup=reply_markup,
                         parse_mode='Markdown'
                     )
             except BadRequest:
                 await context.bot.send_message(
-                    chat_id=query.message.chat_id,
+                    chat_id=query.message.chat.id,
                     text=f"{message}\n\n{INVALID_IMAGES_ERROR}",
                     reply_markup=reply_markup,
                     parse_mode='Markdown'
                 )
         else:
             await context.bot.send_message(
-                chat_id=query.message.chat_id,
+                chat_id=query.message.chat.id,
                 text=message,
                 reply_markup=reply_markup,
                 parse_mode='Markdown'
@@ -85,7 +85,7 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
 
     # IMPORTANT: After all products, send navigation menu
     await context.bot.send_message(
-        chat_id=query.message.chat_id,
+        chat_id=query.message.chat.id,
         text="📋 *Barcha mahsulotlar ko'rsatildi*\n\nQuyidagi tugmalardan foydalaning:",
         reply_markup=get_client_after_products_keyboard(),
         parse_mode='Markdown'
@@ -138,7 +138,7 @@ async def handle_order_request(update: Update, context: ContextTypes.DEFAULT_TYP
     query = update.callback_query
     await query.answer()
 
-    product_id = query.data.split("_")[1]
+    product_id = int(query.data.split("_")[1])
 
     # Load real data
     db = get_db_session()

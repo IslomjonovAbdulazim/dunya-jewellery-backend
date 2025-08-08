@@ -16,7 +16,7 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
     if update.callback_query:
         query = update.callback_query
         await query.answer()
-        chat_id = query.message.chat_id
+        chat_id = query.message.chat.id
         edit_message = lambda text, **kwargs: query.edit_message_text(text, **kwargs)
     else:
         chat_id = update.effective_chat.id
@@ -74,7 +74,7 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
         try:
             if len(file_ids) == 1:
                 await context.bot.send_photo(
-                    chat_id=query.message.chat_id,
+                    chat_id=query.message.chat.id,
                     photo=file_ids[0],
                     caption=message,
                     reply_markup=reply_markup,
@@ -89,23 +89,23 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                     else:
                         media.append(InputMediaPhoto(media=file_id))
 
-                await context.bot.send_media_group(chat_id=query.message.chat_id, media=media)
+                await context.bot.send_media_group(chat_id=query.message.chat.id, media=media)
                 await context.bot.send_message(
-                    chat_id=query.message.chat_id,
+                    chat_id=query.message.chat.id,
                     text=f"🔧 *{product.title}* - Boshqaruv",
                     reply_markup=reply_markup,
                     parse_mode='Markdown'
                 )
         except BadRequest:
             await context.bot.send_message(
-                chat_id=query.message.chat_id,
+                chat_id=query.message.chat.id,
                 text=f"{message}\n\n{INVALID_FILE_ID_ERROR}",
                 reply_markup=reply_markup,
                 parse_mode='Markdown'
             )
     else:
         await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=query.message.chat.id,
             text=message,
             reply_markup=reply_markup,
             parse_mode='Markdown'
@@ -118,7 +118,7 @@ async def start_add_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = update.callback_query
         await query.answer()
         user_id = query.from_user.id
-        chat_id = query.message.chat_id
+        chat_id = query.message.chat.id
         send_message = lambda text, **kwargs: context.bot.send_message(chat_id, text, **kwargs)
     else:
         user_id = update.effective_user.id
@@ -160,7 +160,7 @@ async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE)
     })
 
     await context.bot.send_message(
-        chat_id=query.message.chat_id,
+        chat_id=query.message.chat.id,
         text=f"📝 *Tahrirlash*: {product.title}\n\n{EDIT_TITLE_PROMPT}",
         parse_mode='Markdown'
     )
@@ -179,7 +179,7 @@ async def confirm_delete_product(update: Update, context: ContextTypes.DEFAULT_T
 
     if not product:
         await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=query.message.chat.id,
             text=PRODUCT_NOT_FOUND,
             parse_mode='Markdown'
         )
@@ -187,7 +187,7 @@ async def confirm_delete_product(update: Update, context: ContextTypes.DEFAULT_T
 
     reply_markup = get_delete_confirmation_keyboard(product_id)
     await context.bot.send_message(
-        chat_id=query.message.chat_id,
+        chat_id=query.message.chat.id,
         text=DELETE_CONFIRMATION.format(product.title),
         reply_markup=reply_markup,
         parse_mode='Markdown'

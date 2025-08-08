@@ -5,7 +5,7 @@ from telegram.ext import ContextTypes
 
 from database import get_db_session
 from models import Contact
-from ..utils import admin_required, set_user_state, format_contact_for_admin
+from ..utils import admin_required, set_user_state, format_contact_for_admin, clear_user_state
 from ..constants import *
 from ..keyboards import get_contact_edit_keyboard
 
@@ -15,7 +15,7 @@ async def show_admin_contact(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if update.callback_query:
         query = update.callback_query
         await query.answer()
-        chat_id = query.message.chat_id
+        chat_id = query.message.chat.id
         edit_message = query.edit_message_text
     else:
         chat_id = update.effective_chat.id
@@ -71,7 +71,7 @@ async def start_edit_contact_field(update: Update, context: ContextTypes.DEFAULT
 
     if not contact:
         await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=query.message.chat.id,
             text=CONTACT_NOT_FOUND
         )
         return
@@ -94,7 +94,7 @@ async def start_edit_contact_field(update: Update, context: ContextTypes.DEFAULT
         prompt = EDIT_CONTACT_INSTAGRAM.format(current_value)
 
     await context.bot.send_message(
-        chat_id=query.message.chat_id,
+        chat_id=query.message.chat.id,
         text=prompt,
         parse_mode='Markdown'
     )
@@ -210,5 +210,4 @@ async def handle_contact_field_edit(update: Update, context: ContextTypes.DEFAUL
     finally:
         db.close()
         # Clear user state only on success or unexpected error
-        from ..utils import clear_user_state
         clear_user_state(user_id)
