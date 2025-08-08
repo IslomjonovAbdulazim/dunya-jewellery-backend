@@ -16,6 +16,12 @@ def get_database_url():
         # Normalize common Heroku-style URL prefix
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql://", 1)
+
+        # Append sslmode for managed providers (e.g., Railway) unless already specified
+        if url.startswith("postgresql://") and "sslmode=" not in url:
+            sslmode = getattr(config, 'DB_SSLMODE', None) or "require"
+            separator = '&' if '?' in url else '?'
+            url = f"{url}{separator}sslmode={sslmode}"
         return url
 
     # Option 2: Build from individual components (if DATABASE_URL doesn't work)

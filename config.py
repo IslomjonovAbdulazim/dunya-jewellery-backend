@@ -17,6 +17,7 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
+DB_SSLMODE = os.getenv("DB_SSLMODE")  # e.g., require, verify-full
 
 # Server Configuration
 HOST = os.getenv("HOST", "0.0.0.0")
