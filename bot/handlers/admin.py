@@ -8,7 +8,7 @@ from database import get_db_session
 from models import Product
 from ..utils import admin_required, format_product_for_admin, set_user_state
 from ..constants import *
-from ..keyboards import get_products_list_keyboard, get_delete_confirmation_keyboard
+from ..keyboards import get_products_list_keyboard, get_delete_confirmation_keyboard, get_admin_nav_keyboard
 
 @admin_required
 async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE):

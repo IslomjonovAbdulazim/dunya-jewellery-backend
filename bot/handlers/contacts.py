@@ -7,7 +7,7 @@ from database import get_db_session
 from models import Contact
 from ..utils import admin_required, set_user_state, format_contact_for_admin, clear_user_state
 from ..constants import *
-from ..keyboards import get_contact_edit_keyboard
+from ..keyboards import get_contact_edit_keyboard, get_admin_nav_keyboard
 
 @admin_required
 async def show_admin_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):

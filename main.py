@@ -32,13 +32,17 @@ async def lifespan(app: FastAPI):
         print(f"❌ Failed to create database tables: {e}")
         raise
 
-    # Setup and start bot
+    # Setup and start bot (optional if BOT_TOKEN is configured)
+    bot_app = None
     try:
-        bot_app = setup_bot()
-        await bot_app.initialize()
-        await bot_app.start()
-        await bot_app.updater.start_polling()
-        print("🤖 Bot started successfully")
+        if getattr(config, 'BOT_TOKEN', None):
+            bot_app = setup_bot()
+            await bot_app.initialize()
+            await bot_app.start()
+            await bot_app.updater.start_polling()
+            print("🤖 Bot started successfully")
+        else:
+            print("⚠️  BOT_TOKEN not set — starting API without Telegram bot")
     except Exception as e:
         print(f"❌ Failed to start bot: {e}")
         raise
@@ -47,10 +51,11 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     try:
-        await bot_app.updater.stop()
-        await bot_app.stop()
-        await bot_app.shutdown()
-        print("🛑 Bot stopped")
+        if bot_app is not None:
+            await bot_app.updater.stop()
+            await bot_app.stop()
+            await bot_app.shutdown()
+            print("🛑 Bot stopped")
     except Exception as e:
         print(f"⚠️ Error during shutdown: {e}")
 

@@ -5,6 +5,7 @@ from telegram.ext import ContextTypes
 
 from database import get_db_session
 from models import Product, Contact
+from ..keyboards import get_admin_nav_keyboard
 from ..utils import is_admin, get_user_state, clear_user_state, parse_sizes
 from ..constants import *
 
@@ -139,7 +140,7 @@ async def create_new_product(update: Update, context: ContextTypes.DEFAULT_TYPE,
     db.refresh(product)
 
     success_msg = PRODUCT_CREATED.format(product.title, product.id)
-    await update.message.reply_text(success_msg, parse_mode='Markdown')
+    await update.message.reply_text(success_msg, parse_mode='Markdown', reply_markup=get_admin_nav_keyboard())
 
 async def update_existing_product(update: Update, context: ContextTypes.DEFAULT_TYPE, state, db):
     """Update existing product"""
@@ -158,7 +159,7 @@ async def update_existing_product(update: Update, context: ContextTypes.DEFAULT_
     db.commit()
 
     success_msg = PRODUCT_UPDATED.format(product.title)
-    await update.message.reply_text(success_msg, parse_mode='Markdown')
+    await update.message.reply_text(success_msg, parse_mode='Markdown', reply_markup=get_admin_nav_keyboard())
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle photo uploads - REPLACE OLD IMAGES"""

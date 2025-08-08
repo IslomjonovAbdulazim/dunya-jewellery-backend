@@ -75,3 +75,13 @@ def get_contact_edit_keyboard():
         [InlineKeyboardButton(BTN_EDIT_INSTAGRAM, callback_data="edit_contact_instagram")]
     ]
     return InlineKeyboardMarkup(keyboard)
+
+
+def get_admin_nav_keyboard():
+    """Basic admin navigation keyboard"""
+    keyboard = [
+        [InlineKeyboardButton(BTN_BACK_MAIN, callback_data="back_to_main")],
+        [InlineKeyboardButton(BTN_ADD_NEW, callback_data="admin_add")],
+        [InlineKeyboardButton(BTN_CONTACT, callback_data="contact")],
+    ]
+    return InlineKeyboardMarkup(keyboard)
