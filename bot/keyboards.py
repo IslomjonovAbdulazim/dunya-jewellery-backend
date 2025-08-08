@@ -54,8 +54,9 @@ def get_products_list_keyboard(products):
     if row:
         keyboard.append(row)
 
-    # Add "Add New" button
+    # Add action buttons
     keyboard.append([InlineKeyboardButton(BTN_ADD_NEW, callback_data="admin_add")])
+    keyboard.append([InlineKeyboardButton(BTN_BACK_MAIN, callback_data="back_to_main")])
 
     return InlineKeyboardMarkup(keyboard)
 
@@ -72,7 +73,8 @@ def get_contact_edit_keyboard():
     keyboard = [
         [InlineKeyboardButton(BTN_EDIT_TELEGRAM, callback_data="edit_contact_telegram")],
         [InlineKeyboardButton(BTN_EDIT_PHONES, callback_data="edit_contact_phones")],
-        [InlineKeyboardButton(BTN_EDIT_INSTAGRAM, callback_data="edit_contact_instagram")]
+        [InlineKeyboardButton(BTN_EDIT_INSTAGRAM, callback_data="edit_contact_instagram")],
+        [InlineKeyboardButton(BTN_BACK_MAIN, callback_data="back_to_main")]
     ]
     return InlineKeyboardMarkup(keyboard)
 

@@ -94,18 +94,19 @@ def parse_sizes(text):
 def format_contact_for_admin(contact):
     """Format contact for admin display"""
     try:
-        # Escape for MarkdownV2
+        # Escape for MarkdownV2 and replace hyphens to avoid parse issues in italic context
         if contact.telegram_username:
-            telegram = "@" + escape_markdown(contact.telegram_username, version=2)
+            safe_user = contact.telegram_username.replace('-', '\\-')
+            telegram = "@" + escape_markdown(safe_user, version=2)
         else:
             telegram = "Yo'q"
 
         phones = contact.get_phone_numbers_list()
-        phones_text = ", ".join(escape_markdown(p, version=2) for p in phones) if phones else "Yo'q"
+        phones_text = ", ".join(escape_markdown(p.replace('+', '\\+'), version=2) for p in phones) if phones else "Yo'q"
 
         if contact.instagram_username:
-            # Show as plain URL text escaped for MarkdownV2
-            instagram = escape_markdown(f"https://instagram.com/{contact.instagram_username}", version=2)
+            safe_inst = contact.instagram_username.replace('-', '\\-')
+            instagram = escape_markdown(f"https://instagram.com/{safe_inst}", version=2)
         else:
             instagram = "Yo'q"
 
@@ -116,12 +117,20 @@ def format_contact_for_admin(contact):
 def format_contact_for_client(contact):
     """Format contact for client display"""
     # Escape for MarkdownV2
-    telegram = ("@" + escape_markdown(contact.telegram_username, version=2)) if contact.telegram_username else "❌"
+    if contact.telegram_username:
+        safe_user = contact.telegram_username.replace('-', '\\-')
+        telegram = "@" + escape_markdown(safe_user, version=2)
+    else:
+        telegram = "❌"
 
     phones = contact.get_phone_numbers_list()
-    phones_text = ", ".join(escape_markdown(p, version=2) for p in phones) if phones else "❌"
+    phones_text = ", ".join(escape_markdown(p.replace('+', '\\+'), version=2) for p in phones) if phones else "❌"
 
-    instagram = escape_markdown(f"https://instagram.com/{contact.instagram_username}", version=2) if contact.instagram_username else "❌"
+    if contact.instagram_username:
+        safe_inst = contact.instagram_username.replace('-', '\\-')
+        instagram = escape_markdown(f"https://instagram.com/{safe_inst}", version=2)
+    else:
+        instagram = "❌"
 
     return CONTACT_TEMPLATE_CLIENT.format(telegram, phones_text, instagram)
 
