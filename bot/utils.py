@@ -2,6 +2,7 @@
 
 import config
 from .constants import *
+from telegram.helpers import escape_markdown
 
 # Global user states
 user_states = {}
@@ -93,15 +94,20 @@ def parse_sizes(text):
 def format_contact_for_admin(contact):
     """Format contact for admin display"""
     try:
-        # Telegram with @username (works inside Telegram bot)
-        telegram = f"@{contact.telegram_username}" if contact.telegram_username else "Yo'q"
+        # Escape for MarkdownV2
+        if contact.telegram_username:
+            telegram = "@" + escape_markdown(contact.telegram_username, version=2)
+        else:
+            telegram = "Yo'q"
 
-        # Phone numbers (raw format for click-to-call)
         phones = contact.get_phone_numbers_list()
-        phones_text = ", ".join(phones) if phones else "Yo'q"
+        phones_text = ", ".join(escape_markdown(p, version=2) for p in phones) if phones else "Yo'q"
 
-        # Instagram with clickable link
-        instagram = f"https://instagram.com/{contact.instagram_username}" if contact.instagram_username else "Yo'q"
+        if contact.instagram_username:
+            # Show as plain URL text escaped for MarkdownV2
+            instagram = escape_markdown(f"https://instagram.com/{contact.instagram_username}", version=2)
+        else:
+            instagram = "Yo'q"
 
         return CONTACT_TEMPLATE_ADMIN.format(telegram, phones_text, instagram)
     except Exception as e:
@@ -109,15 +115,13 @@ def format_contact_for_admin(contact):
 
 def format_contact_for_client(contact):
     """Format contact for client display"""
-    # Telegram with @username (works inside Telegram bot)
-    telegram = f"@{contact.telegram_username}" if contact.telegram_username else "❌"
+    # Escape for MarkdownV2
+    telegram = ("@" + escape_markdown(contact.telegram_username, version=2)) if contact.telegram_username else "❌"
 
-    # Phone numbers (raw format for click-to-call)
     phones = contact.get_phone_numbers_list()
-    phones_text = ", ".join(phones) if phones else "❌"
+    phones_text = ", ".join(escape_markdown(p, version=2) for p in phones) if phones else "❌"
 
-    # Instagram with clickable link
-    instagram = f"https://instagram.com/{contact.instagram_username}" if contact.instagram_username else "❌"
+    instagram = escape_markdown(f"https://instagram.com/{contact.instagram_username}", version=2) if contact.instagram_username else "❌"
 
     return CONTACT_TEMPLATE_CLIENT.format(telegram, phones_text, instagram)
 

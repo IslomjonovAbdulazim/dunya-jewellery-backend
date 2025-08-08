@@ -28,7 +28,7 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
     db.close()
 
     if not products:
-        await edit_message(NO_PRODUCTS_ADMIN, parse_mode='Markdown')
+        await edit_message(NO_PRODUCTS_ADMIN, parse_mode='MarkdownV2')
         return
 
     # Create clean product list
@@ -41,7 +41,7 @@ async def show_admin_products(update: Update, context: ContextTypes.DEFAULT_TYPE
     product_list += f"\n📋 Jami: {len(products)} ta\n\n👆 Mahsulotni tanlang:"
 
     reply_markup = get_products_list_keyboard(products)
-    await edit_message(product_list, reply_markup=reply_markup, parse_mode='Markdown')
+    await edit_message(product_list, reply_markup=reply_markup, parse_mode='MarkdownV2')
 
 @admin_required
 async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -56,7 +56,7 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
     db.close()
 
     if not product:
-        await query.edit_message_text(PRODUCT_NOT_FOUND, parse_mode='Markdown')
+        await query.edit_message_text(PRODUCT_NOT_FOUND, parse_mode='MarkdownV2')
         return
 
     message = format_product_for_admin(product)
@@ -78,14 +78,14 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                     photo=file_ids[0],
                     caption=message,
                     reply_markup=reply_markup,
-                    parse_mode='Markdown'
+                    parse_mode='MarkdownV2'
                 )
             else:
                 # Multiple images
                 media = []
                 for i, file_id in enumerate(file_ids):
                     if i == 0:
-                        media.append(InputMediaPhoto(media=file_id, caption=message, parse_mode='Markdown'))
+                        media.append(InputMediaPhoto(media=file_id, caption=message, parse_mode='MarkdownV2'))
                     else:
                         media.append(InputMediaPhoto(media=file_id))
 
@@ -94,21 +94,21 @@ async def show_single_product(update: Update, context: ContextTypes.DEFAULT_TYPE
                     chat_id=query.message.chat.id,
                     text=f"🔧 *{product.title}* - Boshqaruv",
                     reply_markup=reply_markup,
-                    parse_mode='Markdown'
+                    parse_mode='MarkdownV2'
                 )
         except BadRequest:
             await context.bot.send_message(
                 chat_id=query.message.chat.id,
                 text=f"{message}\n\n{INVALID_FILE_ID_ERROR}",
                 reply_markup=reply_markup,
-                parse_mode='Markdown'
+                parse_mode='MarkdownV2'
             )
     else:
         await context.bot.send_message(
             chat_id=query.message.chat.id,
             text=message,
             reply_markup=reply_markup,
-            parse_mode='Markdown'
+            parse_mode='MarkdownV2'
         )
 
 @admin_required
@@ -146,9 +146,9 @@ async def start_edit_product(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     if not product:
         await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=query.message.chat.id,
             text=PRODUCT_NOT_FOUND,
-            parse_mode='Markdown'
+            parse_mode='MarkdownV2'
         )
         return
 
@@ -190,7 +190,7 @@ async def confirm_delete_product(update: Update, context: ContextTypes.DEFAULT_T
         chat_id=query.message.chat.id,
         text=DELETE_CONFIRMATION.format(product.title),
         reply_markup=reply_markup,
-        parse_mode='Markdown'
+        parse_mode='MarkdownV2'
     )
 
 @admin_required
@@ -207,9 +207,9 @@ async def delete_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not product:
         db.close()
         await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=query.message.chat.id,
             text=PRODUCT_NOT_FOUND,
-            parse_mode='Markdown'
+            parse_mode='MarkdownV2'
         )
         return
 
@@ -221,7 +221,7 @@ async def delete_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id=query.message.chat_id,
         text=PRODUCT_DELETED.format(product_title),
-        parse_mode='Markdown'
+        parse_mode='MarkdownV2'
     )
 
 async def cancel_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):

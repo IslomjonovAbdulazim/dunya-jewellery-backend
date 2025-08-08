@@ -131,7 +131,7 @@ async def show_contact_info_client(update: Update, context: ContextTypes.DEFAULT
 
     # Always include back button for clean navigation
     reply_markup = get_client_back_keyboard()
-    await query.edit_message_text(contact_message, reply_markup=reply_markup, parse_mode='Markdown')
+    await query.edit_message_text(contact_message, reply_markup=reply_markup, parse_mode='MarkdownV2')
 
 async def handle_order_request(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle order requests"""

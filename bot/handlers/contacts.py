@@ -36,7 +36,7 @@ async def show_admin_contact(update: Update, context: ContextTypes.DEFAULT_TYPE)
     await edit_message(
         message,
         reply_markup=reply_markup,
-        parse_mode='Markdown'
+        parse_mode='MarkdownV2'
     )
 
 async def create_default_contact(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -96,7 +96,7 @@ async def start_edit_contact_field(update: Update, context: ContextTypes.DEFAULT
     await context.bot.send_message(
         chat_id=query.message.chat.id,
         text=prompt,
-        parse_mode='Markdown'
+        parse_mode='MarkdownV2'
     )
 
 def parse_phone_numbers(text):

@@ -56,9 +56,9 @@ CONTACT_MANAGEMENT_HEADER = "📞 Kontakt ma'lumotlari"
 EDIT_CONTACT_START = "📞 Kontakt ma'lumotlarini tahrirlash\n\nQaysi qismini o'zgartirmoqchisiz?"
 
 # Contact editing (NO SKIP)
-EDIT_CONTACT_TELEGRAM = "📱 Yangi Telegram yuboring\n\n💡 Hozirgi: {}"
+EDIT_CONTACT_TELEGRAM = "📱 Yangi Telegram yuboring\n\n💡 Hozirgi: {}\n\nMasalan: @dunya_jewellery"
 EDIT_CONTACT_PHONES = "📞 Yangi telefon raqamlar ro'yxatini yuboring\n\n💡 Hozirgi: {}\n\n📝 Format: +998901234567, +998907654321\n💡 Faqat O'zbekiston raqamlari\n⚠️ Eski raqamlar o'chiriladi, yangi ro'yxat qo'shiladi"
-EDIT_CONTACT_INSTAGRAM = "📷 Yangi Instagram yuboring\n\n💡 Hozirgi: {}"
+EDIT_CONTACT_INSTAGRAM = "📷 Yangi Instagram yuboring\n\n💡 Hozirgi: {}\n\nMasalan: dunya_jewellery"
 
 # Contact success
 CONTACT_UPDATED = "✅ Kontakt ma'lumotlari yangilandi!"
