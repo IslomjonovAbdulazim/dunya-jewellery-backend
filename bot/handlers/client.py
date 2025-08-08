@@ -33,7 +33,7 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
     # Send header with better navigation after products
     await query.edit_message_text(
         CLIENT_PRODUCTS_HEADER,
-        parse_mode='Markdown'
+        parse_mode='MarkdownV2'
     )
 
     # Send each product
@@ -50,14 +50,14 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
                         photo=file_ids[0],
                         caption=message,
                         reply_markup=reply_markup,
-                        parse_mode='Markdown'
+                        parse_mode='MarkdownV2'
                     )
                 else:
                     # Multiple images
                     media = []
                     for i, file_id in enumerate(file_ids):
                         if i == 0:
-                            media.append(InputMediaPhoto(media=file_id, caption=message, parse_mode='Markdown'))
+                            media.append(InputMediaPhoto(media=file_id, caption=message, parse_mode='MarkdownV2'))
                         else:
                             media.append(InputMediaPhoto(media=file_id))
 
@@ -66,21 +66,21 @@ async def view_products_client(update: Update, context: ContextTypes.DEFAULT_TYP
                         chat_id=query.message.chat.id,
                         text=f"📞 *Mahsulot*: {product.title}",
                         reply_markup=reply_markup,
-                        parse_mode='Markdown'
+                        parse_mode='MarkdownV2'
                     )
             except BadRequest:
                 await context.bot.send_message(
                     chat_id=query.message.chat.id,
                     text=f"{message}\n\n{INVALID_IMAGES_ERROR}",
                     reply_markup=reply_markup,
-                    parse_mode='Markdown'
+                    parse_mode='MarkdownV2'
                 )
         else:
             await context.bot.send_message(
                 chat_id=query.message.chat.id,
                 text=message,
                 reply_markup=reply_markup,
-                parse_mode='Markdown'
+                parse_mode='MarkdownV2'
             )
 
     # IMPORTANT: After all products, send navigation menu

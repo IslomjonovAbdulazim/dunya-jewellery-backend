@@ -38,7 +38,12 @@ def format_product_for_client(product):
         else:
             sizes_text = DEFAULT_SIZES
 
-        return PRODUCT_TEMPLATE_CLIENT.format(title, description, sizes_text)
+        # Escape for MarkdownV2
+        safe_title = escape_markdown(str(title), version=2)
+        safe_desc = escape_markdown(str(description), version=2)
+        safe_sizes = escape_markdown(str(sizes_text), version=2)
+
+        return PRODUCT_TEMPLATE_CLIENT.format(safe_title, safe_desc, safe_sizes)
     except Exception as e:
         return "❌ Mahsulot ma'lumotini ko'rsatishda xatolik"
 
@@ -66,7 +71,12 @@ def format_product_for_admin(product):
         image_count = len(file_ids)
         product_id = getattr(product, 'id', 'N/A')
 
-        return PRODUCT_TEMPLATE_ADMIN.format(status, title, description, sizes_text, image_count, product_id)
+        # Escape for MarkdownV2
+        safe_title = escape_markdown(str(title), version=2)
+        safe_desc = escape_markdown(str(description), version=2)
+        safe_sizes = escape_markdown(str(sizes_text), version=2)
+
+        return PRODUCT_TEMPLATE_ADMIN.format(status, safe_title, safe_desc, safe_sizes, image_count, product_id)
     except Exception as e:
         return f"❌ Mahsulot ma'lumotini ko'rsatishda xatolik (ID: {getattr(product, 'id', 'N/A')})"
 
